@@ -10,6 +10,9 @@ export const authConfig: NextAuthConfig = {
     signIn: "/login",
   },
   session: { strategy: "jwt" },
+  // Necessário na Vercel: confia no header Host em vez de exigir NEXTAUTH_URL
+  // fixo, já que preview deployments têm domínios dinâmicos.
+  trustHost: true,
   providers: [],
   callbacks: {
     authorized({ auth, request }) {
