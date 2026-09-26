@@ -1,6 +1,16 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/crypto";
 import { criarEmpresaFocusNfe } from "@/lib/focusnfe";
+
+function ehCnpjDuplicado(err: unknown): boolean {
+  return (
+    err instanceof Prisma.PrismaClientKnownRequestError &&
+    err.code === "P2002" &&
+    Array.isArray(err.meta?.target) &&
+    err.meta.target.includes("cnpj")
+  );
+}
 
 export interface DadosEmpresaForm {
   razaoSocial: string;
@@ -83,13 +93,28 @@ export async function salvarDadosEmpresa(
   };
 
   if (empresaExistente) {
-    await prisma.empresa.update({ where: { id: empresaExistente.id }, data });
+    try {
+      await prisma.empresa.update({ where: { id: empresaExistente.id }, data });
+    } catch (err) {
+      if (ehCnpjDuplicado(err)) {
+        return { error: "Este CNPJ já está cadastrado em outra conta." };
+      }
+      throw err;
+    }
     return { empresaId: empresaExistente.id };
   }
 
-  const novaEmpresa = await prisma.empresa.create({
-    data: { ...data, userId, focusNfeAmbiente: "sandbox" },
-  });
+  let novaEmpresa;
+  try {
+    novaEmpresa = await prisma.empresa.create({
+      data: { ...data, userId, focusNfeAmbiente: "sandbox" },
+    });
+  } catch (err) {
+    if (ehCnpjDuplicado(err)) {
+      return { error: "Este CNPJ já está cadastrado em outra conta." };
+    }
+    throw err;
+  }
 
   const masterToken = process.env.FOCUS_NFE_MASTER_TOKEN;
   if (masterToken) {

@@ -51,7 +51,17 @@ export async function salvarEmpresa(
   const erroValidacao = validarDadosEmpresa(dados);
   if (erroValidacao) return { error: erroValidacao };
 
-  const resultado = await salvarDadosEmpresa(session.user.id, dados);
+  let resultado;
+  try {
+    resultado = await salvarDadosEmpresa(session.user.id, dados);
+  } catch (err) {
+    return {
+      error:
+        err instanceof Error
+          ? `Não foi possível salvar a empresa: ${err.message}`
+          : "Não foi possível salvar a empresa. Tente novamente.",
+    };
+  }
   if (resultado.error) return { error: resultado.error };
 
   revalidatePath("/dashboard/empresa");
