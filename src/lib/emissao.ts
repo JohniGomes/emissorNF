@@ -27,6 +27,14 @@ export async function emitirNotaParaEmpresa({
     throw new Error("Empresa sem token da Focus NFe configurado.");
   }
 
+  if (empresa.regimeTributario === "MEI") {
+    // MEI é obrigado a emitir pelo padrão NFS-e Nacional (DPS), que tem um
+    // payload diferente da NFS-e clássica usada abaixo. Ainda não implementado.
+    throw new Error(
+      "Emissão para empresas MEI (NFS-e Nacional) ainda não está disponível — em breve.",
+    );
+  }
+
   const nota = await prisma.nota.create({
     data: {
       empresaId: empresa.id,

@@ -104,7 +104,11 @@ export async function criarEmpresaFocusNfe(
     uf: dados.uf,
     cep: cepLimpo ? Number(cepLimpo) : undefined,
     email: dados.email || undefined,
-    habilita_nfse: true,
+    // MEI é obrigado pela Focus NFe a usar o padrão NFS-e Nacional; os demais
+    // regimes usam a NFS-e clássica (municipal).
+    ...(dados.regimeTributario === "MEI"
+      ? { habilita_nfsen_homologacao: true }
+      : { habilita_nfse: true }),
   };
 
   const response = await fetch(`${FOCUS_NFE_BASE_URL.producao}/v2/empresas`, {
