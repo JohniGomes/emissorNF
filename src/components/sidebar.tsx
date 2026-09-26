@@ -2,25 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  FileText,
-  Users,
-  Package,
-  Repeat,
-  Calculator,
-  Building2,
-  Gift,
-} from "lucide-react";
+import { LayoutDashboard, FilePlus2, FileText, Users, Gift } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/notas", label: "Notas", icon: FileText },
+  { href: "/dashboard/notas/nova", label: "Emitir NF", icon: FilePlus2 },
+  { href: "/dashboard/notas", label: "NFs emitidas", icon: FileText },
   { href: "/dashboard/clientes", label: "Clientes", icon: Users },
-  { href: "/dashboard/servicos", label: "Serviços", icon: Package },
-  { href: "/dashboard/recorrentes", label: "Recorrentes", icon: Repeat },
-  { href: "/dashboard/fechamento", label: "Fechamento", icon: Calculator },
-  { href: "/dashboard/empresa", label: "Empresa", icon: Building2 },
   { href: "/dashboard/indique", label: "Indique e ganhe", icon: Gift },
 ];
 
@@ -30,6 +18,10 @@ interface SidebarProps {
 
 export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
+
+  const ativoHref = navItems
+    .filter((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <div className="flex h-full w-64 flex-col bg-brand-dark text-white">
@@ -42,10 +34,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
       <nav className="flex-1 space-y-1 px-3 py-2">
         {navItems.map((item) => {
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.href);
+          const isActive = item.href === ativoHref;
           const Icon = item.icon;
 
           return (

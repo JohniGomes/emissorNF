@@ -27,15 +27,28 @@ model Empresa {
   razaoSocial       String
   nomeFantasia      String?
   cnpj              String   @unique
+  telefone          String?
+  celular           String?
   inscricaoMunicipal String?
   regimeTributario  String
+  logradouro        String?
+  numero            String?
+  complemento       String?
+  bairro            String?
+  municipio         String?
   municipioCodigoIbge String
+  cep               String?
   uf                String
 
   // Referência ao token/config da empresa no provedor fiscal (Focus NFe).
   // O token real fica armazenado criptografado, nunca em texto puro.
   focusNfeTokenEncrypted String?
   focusNfeAmbiente       String  @default("sandbox") // sandbox | producao
+
+  // Assinatura (cada assinatura = 1 CNPJ). Pagamento mock por enquanto.
+  planoId         String?
+  cicloCobranca   String? // "mensal" | "anual"
+  assinaturaAtiva Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

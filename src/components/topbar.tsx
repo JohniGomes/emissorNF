@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Menu, HelpCircle, Bell, LogOut } from "lucide-react";
+import { Menu, HelpCircle, Bell, LogOut, Building2 } from "lucide-react";
 
 interface TopbarProps {
   userName?: string | null;
@@ -119,6 +120,14 @@ export function Topbar({ userName, userEmail, onMenuClick }: TopbarProps) {
                   <p className="truncate text-gray-500">{userEmail}</p>
                 </div>
                 <hr className="my-1 border-gray-100" />
+                <Link
+                  href="/dashboard/empresa"
+                  onClick={() => setOpenMenu(null)}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-gray-700 hover:bg-brand-cream"
+                >
+                  <Building2 size={16} />
+                  Dados da empresa
+                </Link>
                 <button
                   type="button"
                   onClick={() => signOut({ callbackUrl: "/" })}

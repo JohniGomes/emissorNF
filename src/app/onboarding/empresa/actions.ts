@@ -8,11 +8,9 @@ import {
   salvarDadosEmpresa,
 } from "@/lib/empresa";
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 
-export interface EmpresaState {
+export interface EmpresaOnboardingState {
   error?: string;
-  success?: boolean;
 }
 
 export interface BuscarCnpjState {
@@ -40,10 +38,10 @@ export async function buscarDadosCnpjAction(
   }
 }
 
-export async function salvarEmpresa(
-  _prevState: EmpresaState,
+export async function salvarEmpresaOnboarding(
+  _prevState: EmpresaOnboardingState,
   formData: FormData,
-): Promise<EmpresaState> {
+): Promise<EmpresaOnboardingState> {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -54,6 +52,5 @@ export async function salvarEmpresa(
   const resultado = await salvarDadosEmpresa(session.user.id, dados);
   if (resultado.error) return { error: resultado.error };
 
-  revalidatePath("/dashboard/empresa");
-  return { success: true };
+  redirect("/onboarding/plano");
 }

@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Users, FileText, Repeat, Plus } from "lucide-react";
+import { Users, FileText, Plus } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -12,12 +12,11 @@ export default async function DashboardPage() {
     where: { userId: session.user.id },
   });
 
-  if (!empresa) redirect("/dashboard/empresa");
+  if (!empresa) redirect("/onboarding");
 
-  const [totalClientes, totalNotas, recorrentesAtivas] = await Promise.all([
+  const [totalClientes, totalNotas] = await Promise.all([
     prisma.cliente.count({ where: { empresaId: empresa.id } }),
     prisma.nota.count({ where: { empresaId: empresa.id } }),
-    prisma.notaRecorrente.count({ where: { empresaId: empresa.id, ativo: true } }),
   ]);
 
   return (
@@ -29,7 +28,7 @@ export default async function DashboardPage() {
         Aqui está um resumo da sua conta.
       </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Link
           href="/dashboard/clientes"
           className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-brand-tan"
@@ -53,21 +52,6 @@ export default async function DashboardPage() {
           <div>
             <p className="text-2xl font-semibold text-gray-900">{totalNotas}</p>
             <p className="text-sm text-gray-500">Notas emitidas</p>
-          </div>
-        </Link>
-
-        <Link
-          href="/dashboard/recorrentes"
-          className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-brand-tan"
-        >
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-cream text-brand-dark">
-            <Repeat size={20} />
-          </div>
-          <div>
-            <p className="text-2xl font-semibold text-gray-900">
-              {recorrentesAtivas}
-            </p>
-            <p className="text-sm text-gray-500">Recorrências ativas</p>
           </div>
         </Link>
       </div>

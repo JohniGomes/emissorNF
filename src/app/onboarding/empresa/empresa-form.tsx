@@ -2,66 +2,36 @@
 
 import { useActionState, useState } from "react";
 import {
-  salvarEmpresa,
+  salvarEmpresaOnboarding,
   buscarDadosCnpjAction,
-  type EmpresaState,
+  type EmpresaOnboardingState,
   type BuscarCnpjState,
 } from "./actions";
 
-export interface EmpresaDefaultValues {
-  razaoSocial: string;
-  nomeFantasia: string | null;
-  cnpj: string;
-  telefone: string | null;
-  celular: string | null;
-  inscricaoMunicipal: string | null;
-  regimeTributario: string;
-  logradouro: string | null;
-  numero: string | null;
-  complemento: string | null;
-  bairro: string | null;
-  municipio: string | null;
-  municipioCodigoIbge: string;
-  cep: string | null;
-  uf: string;
-}
-
-interface EmpresaFormProps {
-  defaultValues?: EmpresaDefaultValues;
-}
-
-const initialEmpresaState: EmpresaState = {};
+const initialState: EmpresaOnboardingState = {};
 const initialCnpjState: BuscarCnpjState = {};
 
-export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
+export function OnboardingEmpresaForm() {
   const [state, formAction, pending] = useActionState(
-    salvarEmpresa,
-    initialEmpresaState,
+    salvarEmpresaOnboarding,
+    initialState,
   );
 
-  const jaExiste = !!defaultValues;
-
-  const [cnpj, setCnpj] = useState(defaultValues?.cnpj ?? "");
-  const [razaoSocial, setRazaoSocial] = useState(defaultValues?.razaoSocial ?? "");
-  const [nomeFantasia, setNomeFantasia] = useState(defaultValues?.nomeFantasia ?? "");
-  const [telefone, setTelefone] = useState(defaultValues?.telefone ?? "");
-  const [celular, setCelular] = useState(defaultValues?.celular ?? "");
-  const [logradouro, setLogradouro] = useState(defaultValues?.logradouro ?? "");
-  const [numero, setNumero] = useState(defaultValues?.numero ?? "");
-  const [complemento, setComplemento] = useState(defaultValues?.complemento ?? "");
-  const [bairro, setBairro] = useState(defaultValues?.bairro ?? "");
-  const [municipio, setMunicipio] = useState(defaultValues?.municipio ?? "");
-  const [cep, setCep] = useState(defaultValues?.cep ?? "");
-  const [uf, setUf] = useState(defaultValues?.uf ?? "");
-  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState(
-    defaultValues?.municipioCodigoIbge ?? "",
-  );
-  const [regimeTributario, setRegimeTributario] = useState(
-    defaultValues?.regimeTributario ?? "",
-  );
-  const [inscricaoMunicipal, setInscricaoMunicipal] = useState(
-    defaultValues?.inscricaoMunicipal ?? "",
-  );
+  const [cnpj, setCnpj] = useState("");
+  const [razaoSocial, setRazaoSocial] = useState("");
+  const [nomeFantasia, setNomeFantasia] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [celular, setCelular] = useState("");
+  const [cep, setCep] = useState("");
+  const [logradouro, setLogradouro] = useState("");
+  const [numero, setNumero] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [uf, setUf] = useState("");
+  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState("");
+  const [regimeTributario, setRegimeTributario] = useState("");
+  const [inscricaoMunicipal, setInscricaoMunicipal] = useState("");
 
   const [buscaState, setBuscaState] = useState<BuscarCnpjState>(initialCnpjState);
   const [buscando, setBuscando] = useState(false);
@@ -94,29 +64,26 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
   }
 
   return (
-    <form action={formAction} className="max-w-xl space-y-4">
+    <form action={formAction} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">CNPJ *</label>
         <div className="mt-1 flex gap-2">
           <input
             name="cnpj"
             required
-            readOnly={jaExiste}
             value={cnpj}
             onChange={(e) => setCnpj(e.target.value)}
             placeholder="00.000.000/0000-00"
-            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
-          {!jaExiste && (
-            <button
-              type="button"
-              onClick={handleBuscarCnpj}
-              disabled={buscando || !cnpj}
-              className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
-            >
-              {buscando ? "Buscando..." : "Buscar dados"}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handleBuscarCnpj}
+            disabled={buscando || !cnpj}
+            className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
+          >
+            {buscando ? "Buscando..." : "Buscar dados"}
+          </button>
         </div>
         {buscaState.error && (
           <p className="mt-1 text-sm text-red-600">{buscaState.error}</p>
@@ -129,8 +96,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">Razão social *</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Razão social *
+          </label>
           <input
             name="razaoSocial"
             required
@@ -140,8 +109,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           />
         </div>
 
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">Nome fantasia</label>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Nome fantasia
+          </label>
           <input
             name="nomeFantasia"
             value={nomeFantasia}
@@ -169,11 +140,17 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
+      </div>
 
+      <hr className="border-gray-100" />
+      <p className="text-sm font-medium text-gray-700">Endereço</p>
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">CEP</label>
+          <label className="block text-sm font-medium text-gray-700">CEP *</label>
           <input
             name="cep"
+            required
             value={cep}
             onChange={(e) => setCep(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -181,9 +158,12 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Logradouro</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Logradouro *
+          </label>
           <input
             name="logradouro"
+            required
             value={logradouro}
             onChange={(e) => setLogradouro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -191,9 +171,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Número</label>
+          <label className="block text-sm font-medium text-gray-700">Número *</label>
           <input
             name="numero"
+            required
             value={numero}
             onChange={(e) => setNumero(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -201,7 +182,9 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Complemento</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Complemento
+          </label>
           <input
             name="complemento"
             value={complemento}
@@ -211,9 +194,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Bairro</label>
+          <label className="block text-sm font-medium text-gray-700">Bairro *</label>
           <input
             name="bairro"
+            required
             value={bairro}
             onChange={(e) => setBairro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -221,9 +205,12 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Município</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Cidade *
+          </label>
           <input
             name="municipio"
+            required
             value={municipio}
             onChange={(e) => setMunicipio(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -231,7 +218,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">UF *</label>
+          <label className="block text-sm font-medium text-gray-700">Estado *</label>
           <input
             name="uf"
             required
@@ -242,19 +229,12 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           />
         </div>
 
-        <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Código IBGE do município *
-          </label>
-          <input
-            name="municipioCodigoIbge"
-            required
-            value={municipioCodigoIbge}
-            onChange={(e) => setMunicipioCodigoIbge(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-          />
-        </div>
+        <input type="hidden" name="municipioCodigoIbge" value={municipioCodigoIbge} />
+      </div>
 
+      <hr className="border-gray-100" />
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Regime tributário *
@@ -274,7 +254,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           </select>
         </div>
 
-        <div className="col-span-2">
+        <div>
           <label className="block text-sm font-medium text-gray-700">
             Inscrição municipal
           </label>
@@ -284,24 +264,26 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
             onChange={(e) => setInscricaoMunicipal(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Opcional — muitos MEIs não têm. Não é possível buscar automaticamente; consulte no cartão CNPJ/prefeitura se tiver.
-          </p>
         </div>
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.success && (
-        <p className="text-sm text-green-600">Empresa salva com sucesso.</p>
+      {!municipioCodigoIbge && (
+        <p className="text-xs text-gray-500">
+          Use "Buscar dados" pra preencher o código IBGE do município automaticamente.
+        </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
-      >
-        {pending ? "Salvando..." : "Salvar empresa"}
-      </button>
+      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={pending || !municipioCodigoIbge}
+          className="flex items-center gap-2 rounded-full bg-brand-dark px-6 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
+        >
+          {pending ? "Salvando..." : "Avançar →"}
+        </button>
+      </div>
     </form>
   );
 }

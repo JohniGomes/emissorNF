@@ -11,26 +11,30 @@ export default async function EmpresaPage() {
     where: { userId: session.user.id },
   });
 
+  if (!empresa) redirect("/onboarding");
+
   return (
     <div>
-      <h1 className="mb-6 text-xl font-semibold text-gray-900">
-        {empresa ? "Sua empresa" : "Cadastre sua empresa"}
-      </h1>
+      <h1 className="mb-6 text-xl font-semibold text-gray-900">Sua empresa</h1>
 
       <EmpresaForm
-        defaultValues={
-          empresa
-            ? {
-                razaoSocial: empresa.razaoSocial,
-                nomeFantasia: empresa.nomeFantasia,
-                cnpj: empresa.cnpj,
-                inscricaoMunicipal: empresa.inscricaoMunicipal,
-                regimeTributario: empresa.regimeTributario,
-                municipioCodigoIbge: empresa.municipioCodigoIbge,
-                uf: empresa.uf,
-              }
-            : undefined
-        }
+        defaultValues={{
+          razaoSocial: empresa.razaoSocial,
+          nomeFantasia: empresa.nomeFantasia,
+          cnpj: empresa.cnpj,
+          telefone: empresa.telefone,
+          celular: empresa.celular,
+          inscricaoMunicipal: empresa.inscricaoMunicipal,
+          regimeTributario: empresa.regimeTributario,
+          logradouro: empresa.logradouro,
+          numero: empresa.numero,
+          complemento: empresa.complemento,
+          bairro: empresa.bairro,
+          municipio: empresa.municipio,
+          municipioCodigoIbge: empresa.municipioCodigoIbge,
+          cep: empresa.cep,
+          uf: empresa.uf,
+        }}
       />
     </div>
   );

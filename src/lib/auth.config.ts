@@ -17,8 +17,10 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const isLoggedIn = !!auth?.user;
-      const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
-      if (isDashboard && !isLoggedIn) return false;
+      const precisaLogin =
+        request.nextUrl.pathname.startsWith("/dashboard") ||
+        request.nextUrl.pathname.startsWith("/onboarding");
+      if (precisaLogin && !isLoggedIn) return false;
       return true;
     },
   },

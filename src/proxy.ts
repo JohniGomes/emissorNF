@@ -8,5 +8,5 @@ export function proxy(...args: Parameters<typeof auth>) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/onboarding/:path*"],
 };
