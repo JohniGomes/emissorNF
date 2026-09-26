@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  empresas Empresa[]
+}
+
+model Empresa {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+
+  razaoSocial       String
+  nomeFantasia      String?
+  cnpj              String   @unique
+  inscricaoMunicipal String
+  regimeTributario  String
+  municipioCodigoIbge String
+  uf                String
+
+  // Referência ao token/config da empresa no provedor fiscal (Focus NFe).
+  // O token real fica armazenado criptografado, nunca em texto puro.
+  focusNfeTokenEncrypted String?
+  focusNfeAmbiente       String  @default("sandbox") // sandbox | producao
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientes         Cliente[]
+  notas            Nota[]
+  notasRecorrentes NotaRecorrente[]
+}
+
+model Cliente {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+
+  nome       String
+  documento  String // CNPJ ou CPF
+  email      String?
+  logradouro String?
+  numero     String?
+  bairro     String?
+  municipio  String?
+  uf         String?
+  cep        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notas            Nota[]
+  notasRecorrentes NotaRecorrente[]
+}
+
+model Nota {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+  clienteId String
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+
+  descricaoServico String
+  valor            Decimal @db.Decimal(12, 2)
+
+  status        StatusNota @default(PENDENTE)
+  numero        String?
+  codigoVerificacao String?
+  linkPdf       String?
+  respostaApi   Json?
+  erro          String?
+
+  notaRecorrenteId String?
+  notaRecorrente   NotaRecorrente? @relation(fields: [notaRecorrenteId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum StatusNota {
+  PENDENTE
+  PROCESSANDO
+  AUTORIZADA
+  ERRO
+  CANCELADA
+}
+
+model NotaRecorrente {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+  clienteId String
+  cliente   Cliente  @relation(fields: [clienteId], references: [id])
+
+  descricaoServico String
+  valor            Decimal @db.Decimal(12, 2)
+  diaDoMes         Int // dia do mês em que a nota deve ser emitida
+  ativo            Boolean @default(true)
+
+  ultimaExecucao DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notas Nota[]
+}
