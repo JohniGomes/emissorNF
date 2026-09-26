@@ -12,16 +12,26 @@ export default async function NovaRecorrentePage() {
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  const clientes = await prisma.cliente.findMany({
-    where: { empresaId: empresa.id },
-    orderBy: { nome: "asc" },
-    select: { id: true, nome: true, documento: true },
-  });
+  const [clientes, servicos] = await Promise.all([
+    prisma.cliente.findMany({
+      where: { empresaId: empresa.id },
+      orderBy: { nome: "asc" },
+      select: { id: true, nome: true, documento: true },
+    }),
+    prisma.servico.findMany({
+      where: { empresaId: empresa.id },
+      orderBy: { descricao: "asc" },
+      select: { id: true, descricao: true, valor: true },
+    }),
+  ]);
 
   return (
     <div>
       <h1 className="mb-6 text-xl font-semibold text-gray-900">Nova nota recorrente</h1>
-      <RecorrenteForm clientes={clientes} />
+      <RecorrenteForm
+        clientes={clientes}
+        servicos={servicos.map((s) => ({ ...s, valor: Number(s.valor) }))}
+      />
     </div>
   );
 }

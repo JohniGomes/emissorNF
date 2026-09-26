@@ -29,6 +29,13 @@ export async function emitirNota(
     };
   }
 
+  if (empresa.regimeTributario === "MEI") {
+    return {
+      error:
+        "Emissão para empresas MEI (NFS-e Nacional) ainda não está disponível — em breve.",
+    };
+  }
+
   const clienteId = formData.get("clienteId") as string;
   const descricaoServico = formData.get("descricaoServico") as string;
   const valorStr = formData.get("valor") as string;

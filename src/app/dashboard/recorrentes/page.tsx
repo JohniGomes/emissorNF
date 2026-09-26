@@ -25,7 +25,7 @@ export default async function RecorrentesPage() {
         <h1 className="text-xl font-semibold text-gray-900">Notas recorrentes</h1>
         <Link
           href="/dashboard/recorrentes/nova"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown"
         >
           + Nova recorrência
         </Link>

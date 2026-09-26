@@ -1,16 +1,26 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { criarNotaRecorrente, type NotaRecorrenteState } from "./actions";
 
 interface RecorrenteFormProps {
   clientes: { id: string; nome: string; documento: string }[];
+  servicos: { id: string; descricao: string; valor: number }[];
 }
 
 const initialState: NotaRecorrenteState = {};
 
-export function RecorrenteForm({ clientes }: RecorrenteFormProps) {
+export function RecorrenteForm({ clientes, servicos }: RecorrenteFormProps) {
   const [state, formAction, pending] = useActionState(criarNotaRecorrente, initialState);
+  const [descricaoServico, setDescricaoServico] = useState("");
+  const [valor, setValor] = useState("");
+
+  function handleUsarServico(servicoId: string) {
+    const servico = servicos.find((s) => s.id === servicoId);
+    if (!servico) return;
+    setDescricaoServico(servico.descricao);
+    setValor(servico.valor.toFixed(2).replace(".", ","));
+  }
 
   if (clientes.length === 0) {
     return (
@@ -38,6 +48,30 @@ export function RecorrenteForm({ clientes }: RecorrenteFormProps) {
         </select>
       </div>
 
+      {servicos.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Usar serviço salvo
+          </label>
+          <select
+            onChange={(e) => handleUsarServico(e.target.value)}
+            defaultValue=""
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          >
+            <option value="">Preencher manualmente</option>
+            {servicos.map((servico) => (
+              <option key={servico.id} value={servico.id}>
+                {servico.descricao} —{" "}
+                {servico.valor.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Descrição do serviço *
@@ -46,6 +80,8 @@ export function RecorrenteForm({ clientes }: RecorrenteFormProps) {
           name="descricaoServico"
           required
           rows={3}
+          value={descricaoServico}
+          onChange={(e) => setDescricaoServico(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
@@ -58,6 +94,8 @@ export function RecorrenteForm({ clientes }: RecorrenteFormProps) {
             required
             inputMode="decimal"
             placeholder="0,00"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
@@ -83,7 +121,7 @@ export function RecorrenteForm({ clientes }: RecorrenteFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
       >
         {pending ? "Salvando..." : "Criar recorrência"}
       </button>

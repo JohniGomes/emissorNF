@@ -40,7 +40,7 @@ export default async function NotasPage() {
         <h1 className="text-xl font-semibold text-gray-900">Notas emitidas</h1>
         <Link
           href="/dashboard/notas/nova"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown"
         >
           + Emitir nota
         </Link>
@@ -99,7 +99,7 @@ export default async function NotasPage() {
                         href={nota.linkPdf}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-indigo-600 hover:underline"
+                        className="text-brand-brown hover:underline"
                       >
                         Ver PDF
                       </a>

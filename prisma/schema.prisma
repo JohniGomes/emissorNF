@@ -43,6 +43,7 @@ model Empresa {
   clientes         Cliente[]
   notas            Nota[]
   notasRecorrentes NotaRecorrente[]
+  servicos         Servico[]
 }
 
 model Cliente {
@@ -117,4 +118,15 @@ model NotaRecorrente {
   updatedAt DateTime @updatedAt
 
   notas Nota[]
+}
+
+model Servico {
+  id        String   @id @default(cuid())
+  empresaId String
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+
+  descricao String
+  valor     Decimal @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
 }

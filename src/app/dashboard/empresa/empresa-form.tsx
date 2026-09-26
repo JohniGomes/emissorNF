@@ -99,7 +99,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
               type="button"
               onClick={handleBuscarCnpj}
               disabled={buscando || !cnpj}
-              className="whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
+              className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
             >
               {buscando ? "Buscando..." : "Buscar dados"}
             </button>
@@ -255,7 +255,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
       >
         {pending ? "Salvando..." : "Salvar empresa"}
       </button>
