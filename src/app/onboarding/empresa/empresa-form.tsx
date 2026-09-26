@@ -8,30 +8,60 @@ import {
   type BuscarCnpjState,
 } from "./actions";
 
+export interface OnboardingEmpresaDefaultValues {
+  cnpj: string;
+  razaoSocial: string;
+  nomeFantasia: string | null;
+  telefone: string | null;
+  celular: string | null;
+  cep: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  municipio: string | null;
+  uf: string;
+  municipioCodigoIbge: string;
+  regimeTributario: string;
+  inscricaoMunicipal: string | null;
+}
+
+interface OnboardingEmpresaFormProps {
+  defaultValues?: OnboardingEmpresaDefaultValues;
+}
+
 const initialState: EmpresaOnboardingState = {};
 const initialCnpjState: BuscarCnpjState = {};
 
-export function OnboardingEmpresaForm() {
+export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormProps) {
   const [state, formAction, pending] = useActionState(
     salvarEmpresaOnboarding,
     initialState,
   );
 
-  const [cnpj, setCnpj] = useState("");
-  const [razaoSocial, setRazaoSocial] = useState("");
-  const [nomeFantasia, setNomeFantasia] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [celular, setCelular] = useState("");
-  const [cep, setCep] = useState("");
-  const [logradouro, setLogradouro] = useState("");
-  const [numero, setNumero] = useState("");
-  const [complemento, setComplemento] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [municipio, setMunicipio] = useState("");
-  const [uf, setUf] = useState("");
-  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState("");
-  const [regimeTributario, setRegimeTributario] = useState("");
-  const [inscricaoMunicipal, setInscricaoMunicipal] = useState("");
+  const jaExiste = !!defaultValues;
+
+  const [cnpj, setCnpj] = useState(defaultValues?.cnpj ?? "");
+  const [razaoSocial, setRazaoSocial] = useState(defaultValues?.razaoSocial ?? "");
+  const [nomeFantasia, setNomeFantasia] = useState(defaultValues?.nomeFantasia ?? "");
+  const [telefone, setTelefone] = useState(defaultValues?.telefone ?? "");
+  const [celular, setCelular] = useState(defaultValues?.celular ?? "");
+  const [cep, setCep] = useState(defaultValues?.cep ?? "");
+  const [logradouro, setLogradouro] = useState(defaultValues?.logradouro ?? "");
+  const [numero, setNumero] = useState(defaultValues?.numero ?? "");
+  const [complemento, setComplemento] = useState(defaultValues?.complemento ?? "");
+  const [bairro, setBairro] = useState(defaultValues?.bairro ?? "");
+  const [municipio, setMunicipio] = useState(defaultValues?.municipio ?? "");
+  const [uf, setUf] = useState(defaultValues?.uf ?? "");
+  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState(
+    defaultValues?.municipioCodigoIbge ?? "",
+  );
+  const [regimeTributario, setRegimeTributario] = useState(
+    defaultValues?.regimeTributario ?? "",
+  );
+  const [inscricaoMunicipal, setInscricaoMunicipal] = useState(
+    defaultValues?.inscricaoMunicipal ?? "",
+  );
 
   const [buscaState, setBuscaState] = useState<BuscarCnpjState>(initialCnpjState);
   const [buscando, setBuscando] = useState(false);
@@ -71,19 +101,22 @@ export function OnboardingEmpresaForm() {
           <input
             name="cnpj"
             required
+            readOnly={jaExiste}
             value={cnpj}
             onChange={(e) => setCnpj(e.target.value)}
             placeholder="00.000.000/0000-00"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
           />
-          <button
-            type="button"
-            onClick={handleBuscarCnpj}
-            disabled={buscando || !cnpj}
-            className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
-          >
-            {buscando ? "Buscando..." : "Buscar dados"}
-          </button>
+          {!jaExiste && (
+            <button
+              type="button"
+              onClick={handleBuscarCnpj}
+              disabled={buscando || !cnpj}
+              className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
+            >
+              {buscando ? "Buscando..." : "Buscar dados"}
+            </button>
+          )}
         </div>
         {buscaState.error && (
           <p className="mt-1 text-sm text-red-600">{buscaState.error}</p>
@@ -143,14 +176,15 @@ export function OnboardingEmpresaForm() {
       </div>
 
       <hr className="border-gray-100" />
-      <p className="text-sm font-medium text-gray-700">Endereço</p>
+      <p className="text-sm font-medium text-gray-700">
+        Endereço <span className="font-normal text-gray-400">(opcional)</span>
+      </p>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">CEP *</label>
+          <label className="block text-sm font-medium text-gray-700">CEP</label>
           <input
             name="cep"
-            required
             value={cep}
             onChange={(e) => setCep(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -158,12 +192,9 @@ export function OnboardingEmpresaForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Logradouro *
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Logradouro</label>
           <input
             name="logradouro"
-            required
             value={logradouro}
             onChange={(e) => setLogradouro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -171,10 +202,9 @@ export function OnboardingEmpresaForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Número *</label>
+          <label className="block text-sm font-medium text-gray-700">Número</label>
           <input
             name="numero"
-            required
             value={numero}
             onChange={(e) => setNumero(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -194,10 +224,9 @@ export function OnboardingEmpresaForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Bairro *</label>
+          <label className="block text-sm font-medium text-gray-700">Bairro</label>
           <input
             name="bairro"
-            required
             value={bairro}
             onChange={(e) => setBairro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
@@ -205,9 +234,7 @@ export function OnboardingEmpresaForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Cidade *
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Cidade *</label>
           <input
             name="municipio"
             required
@@ -269,7 +296,8 @@ export function OnboardingEmpresaForm() {
 
       {!municipioCodigoIbge && (
         <p className="text-xs text-gray-500">
-          Use "Buscar dados" pra preencher o código IBGE do município automaticamente.
+          Use &quot;Buscar dados&quot; pra preencher o código IBGE do município
+          automaticamente, ou informe cidade/estado manualmente.
         </p>
       )}
 

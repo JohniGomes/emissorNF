@@ -11,9 +11,7 @@ export default async function OnboardingEmpresaPage() {
   const empresa = await prisma.empresa.findFirst({
     where: { userId: session.user.id },
   });
-  if (empresa) {
-    redirect(empresa.assinaturaAtiva ? "/dashboard" : "/onboarding/plano");
-  }
+  if (empresa?.assinaturaAtiva) redirect("/dashboard");
 
   return (
     <div>
@@ -21,7 +19,29 @@ export default async function OnboardingEmpresaPage() {
       <h1 className="mb-6 text-center text-xl font-semibold text-gray-900">
         Dados da sua empresa
       </h1>
-      <OnboardingEmpresaForm />
+      <OnboardingEmpresaForm
+        defaultValues={
+          empresa
+            ? {
+                cnpj: empresa.cnpj,
+                razaoSocial: empresa.razaoSocial,
+                nomeFantasia: empresa.nomeFantasia,
+                telefone: empresa.telefone,
+                celular: empresa.celular,
+                cep: empresa.cep,
+                logradouro: empresa.logradouro,
+                numero: empresa.numero,
+                complemento: empresa.complemento,
+                bairro: empresa.bairro,
+                municipio: empresa.municipio,
+                uf: empresa.uf,
+                municipioCodigoIbge: empresa.municipioCodigoIbge,
+                regimeTributario: empresa.regimeTributario,
+                inscricaoMunicipal: empresa.inscricaoMunicipal,
+              }
+            : undefined
+        }
+      />
     </div>
   );
 }

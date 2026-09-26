@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { escolherPlano } from "./actions";
 import type { Plano } from "@/lib/planos";
 
@@ -11,31 +12,45 @@ function formatarPreco(valor: number) {
 export function PlanoSelector({ planos }: { planos: Plano[] }) {
   const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
 
+  const referencia = planos[0];
+  const economiaPercentual = referencia
+    ? Math.round(
+        (1 - referencia.precoAnual / (referencia.precoMensal * 12)) * 100,
+      )
+    : 0;
+
   return (
     <div>
-      <div className="mb-8 flex items-center justify-center gap-3">
-        <span
-          className={`text-sm ${ciclo === "mensal" ? "font-semibold text-gray-900" : "text-gray-500"}`}
-        >
-          Mensal
-        </span>
-        <button
-          type="button"
-          onClick={() => setCiclo(ciclo === "mensal" ? "anual" : "mensal")}
-          className="relative h-6 w-11 rounded-full bg-brand-dark transition-colors"
-          aria-label="Alternar ciclo de cobrança"
-        >
-          <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${
-              ciclo === "anual" ? "translate-x-5" : "translate-x-0.5"
+      <div className="mb-8 flex justify-center">
+        <div className="inline-flex items-center rounded-full bg-gray-100 p-1">
+          <button
+            type="button"
+            onClick={() => setCiclo("mensal")}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              ciclo === "mensal"
+                ? "bg-white text-brand-dark shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
             }`}
-          />
-        </button>
-        <span
-          className={`text-sm ${ciclo === "anual" ? "font-semibold text-gray-900" : "text-gray-500"}`}
-        >
-          Anual
-        </span>
+          >
+            Mensal
+          </button>
+          <button
+            type="button"
+            onClick={() => setCiclo("anual")}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              ciclo === "anual"
+                ? "bg-white text-brand-dark shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Anual
+            {economiaPercentual > 0 && (
+              <span className="rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-semibold text-green-700">
+                -{economiaPercentual}%
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap justify-center gap-6">
@@ -73,6 +88,15 @@ export function PlanoSelector({ planos }: { planos: Plano[] }) {
             </form>
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/onboarding/empresa"
+          className="text-sm font-medium text-gray-500 hover:text-gray-700"
+        >
+          ← Voltar
+        </Link>
       </div>
     </div>
   );
