@@ -298,7 +298,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
+        className="rounded-md btn-gradient px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
         {pending ? "Salvando..." : "Salvar empresa"}
       </button>

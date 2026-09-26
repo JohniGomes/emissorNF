@@ -307,7 +307,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
         <button
           type="submit"
           disabled={pending || !municipioCodigoIbge}
-          className="flex items-center gap-2 rounded-full bg-brand-dark px-6 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
+          className="flex items-center gap-2 rounded-full btn-gradient px-6 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           {pending ? "Salvando..." : "Avançar →"}
         </button>

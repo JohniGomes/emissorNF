@@ -102,7 +102,7 @@ export function Topbar({ userName, userEmail, onMenuClick }: TopbarProps) {
           <button
             type="button"
             onClick={() => toggle("user")}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-brown text-sm font-semibold text-white"
+            className="flex h-9 w-9 items-center justify-center rounded-full btn-gradient text-sm font-semibold text-white"
           >
             {getInitials(userName, userEmail)}
           </button>

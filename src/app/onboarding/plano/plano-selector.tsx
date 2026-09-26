@@ -81,7 +81,7 @@ export function PlanoSelector({ planos }: { planos: Plano[] }) {
               <input type="hidden" name="cicloCobranca" value={ciclo} />
               <button
                 type="submit"
-                className="w-full rounded-full bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown"
+                className="w-full rounded-full btn-gradient px-4 py-2 text-sm font-medium text-white"
               >
                 Assinar
               </button>

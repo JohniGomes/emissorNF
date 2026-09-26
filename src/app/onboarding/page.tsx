@@ -17,7 +17,7 @@ export default async function OnboardingGatePage() {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-dark text-sm font-bold text-white">
+      <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg btn-gradient text-sm font-bold text-white">
         NF
       </div>
       <h1 className="mb-2 text-xl font-semibold text-gray-900">Emissor NFs</h1>
@@ -39,7 +39,7 @@ export default async function OnboardingGatePage() {
         </Link>
         <Link
           href="/onboarding/empresa"
-          className="rounded-full bg-brand-dark px-5 py-2 text-sm font-medium text-white hover:bg-brand-brown"
+          className="rounded-full btn-gradient px-5 py-2 text-sm font-medium text-white"
         >
           Já tenho uma empresa →
         </Link>

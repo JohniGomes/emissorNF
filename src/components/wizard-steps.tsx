@@ -14,7 +14,7 @@ export function WizardSteps({ atual }: { atual: 1 | 2 | 3 }) {
               <span
                 className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
                   ativo || concluido
-                    ? "bg-brand-dark text-white"
+                    ? "btn-gradient text-white"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >

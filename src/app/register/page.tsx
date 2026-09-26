@@ -24,7 +24,7 @@ export default function RegisterPage() {
               name="name"
               type="text"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -37,7 +37,7 @@ export default function RegisterPage() {
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -51,7 +51,7 @@ export default function RegisterPage() {
               type="password"
               required
               minLength={8}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -60,7 +60,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-50"
+            className="w-full rounded-md btn-gradient px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           >
             {pending ? "Criando..." : "Criar conta"}
           </button>
@@ -68,7 +68,7 @@ export default function RegisterPage() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Já tem conta?{" "}
-          <Link href="/login" className="text-indigo-600 hover:underline">
+          <Link href="/login" className="text-brand-brown hover:underline">
             Entrar
           </Link>
         </p>

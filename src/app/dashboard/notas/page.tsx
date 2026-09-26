@@ -40,7 +40,7 @@ export default async function NotasPage() {
         <h1 className="text-xl font-semibold text-gray-900">Notas emitidas</h1>
         <Link
           href="/dashboard/notas/nova"
-          className="rounded-md bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown"
+          className="rounded-md btn-gradient px-4 py-2 text-sm font-medium text-white"
         >
           + Emitir nota
         </Link>

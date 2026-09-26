@@ -11,7 +11,7 @@ export default function Home() {
       <div className="flex gap-3">
         <Link
           href="/register"
-          className="rounded-md bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+          className="rounded-md btn-gradient px-5 py-2 text-sm font-medium text-white"
         >
           Criar conta
         </Link>

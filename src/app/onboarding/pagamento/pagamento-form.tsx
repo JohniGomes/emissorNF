@@ -97,7 +97,7 @@ export function PagamentoForm({ ciclo }: PagamentoFormProps) {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-brand-dark px-4 py-2 text-sm font-medium text-white hover:bg-brand-brown disabled:opacity-50"
+        className="w-full rounded-full btn-gradient px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
         {pending ? "Confirmando..." : "Confirmar pagamento"}
       </button>

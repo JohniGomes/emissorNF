@@ -17,7 +17,7 @@ export function OnboardingBackdrop() {
         <div className="flex items-center justify-end gap-2 border-b border-gray-200 bg-white px-6 py-3">
           <HelpCircle size={20} className="text-brand-dark" />
           <Bell size={20} className="text-brand-dark" />
-          <div className="h-9 w-9 rounded-full bg-brand-brown" />
+          <div className="h-9 w-9 rounded-full btn-gradient" />
         </div>
         <div className="flex-1 space-y-4 bg-brand-cream p-8">
           <div className="h-6 w-56 rounded bg-gray-300/70" />

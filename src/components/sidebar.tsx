@@ -24,7 +24,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
-    <div className="flex h-full w-64 flex-col bg-brand-dark text-white">
+    <div className="bg-brand-sidebar flex h-full w-64 flex-col text-white">
       <div className="flex items-center gap-2 px-6 py-5">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-cream text-sm font-bold text-brand-dark">
           NF
@@ -44,7 +44,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
               onClick={onNavigate}
               className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-brand-brown text-white"
+                  ? "btn-gradient text-white"
                   : "text-brand-cream/80 hover:bg-white/10 hover:text-white"
               }`}
             >
