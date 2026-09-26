@@ -1,0 +1,22 @@
+import type { NextAuthConfig } from "next-auth";
+
+/**
+ * Config "edge-safe": sem providers que dependam de Prisma/bcrypt (Node APIs),
+ * usada pelo middleware (Edge runtime). O NextAuth completo (src/lib/auth.ts)
+ * estende esta config adicionando o Credentials provider.
+ */
+export const authConfig: NextAuthConfig = {
+  pages: {
+    signIn: "/login",
+  },
+  session: { strategy: "jwt" },
+  providers: [],
+  callbacks: {
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
+      if (isDashboard && !isLoggedIn) return false;
+      return true;
+    },
+  },
+};

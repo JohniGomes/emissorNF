@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { emitirNotaParaEmpresa } from "@/lib/emissao";
+import { hojeDiaDoMesBrasil, anoMesAtualBrasil } from "@/lib/timezone";
 
 /**
  * Disparado diariamente pelo Vercel Cron (ver vercel.json).
- * Verifica quais NotaRecorrente devem gerar uma Nota hoje e as emite.
- * Implementação da lógica de emissão fica para a próxima fase.
+ * Emite as NotaRecorrente cujo dia do mês bate com hoje e que ainda não
+ * rodaram neste mês/ano (idempotente caso o cron dispare mais de uma vez).
  */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
@@ -11,8 +14,56 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  // TODO: buscar NotaRecorrente com diaDoMes === hoje e ativo === true,
-  // emitir cada uma via FocusNfeClient e gravar o resultado em Nota.
+  const diaHoje = hojeDiaDoMesBrasil();
+  const { ano, mes } = anoMesAtualBrasil();
 
-  return NextResponse.json({ ok: true });
+  const candidatas = await prisma.notaRecorrente.findMany({
+    where: { ativo: true, diaDoMes: diaHoje },
+    include: { empresa: true, cliente: true },
+  });
+
+  const pendentes = candidatas.filter((r) => {
+    if (!r.ultimaExecucao) return true;
+    const execucao = new Date(r.ultimaExecucao);
+    return execucao.getUTCFullYear() !== ano || execucao.getUTCMonth() + 1 !== mes;
+  });
+
+  let sucesso = 0;
+  let falhas = 0;
+  const detalhes: Array<{ id: string; ok: boolean; erro?: string }> = [];
+
+  for (const recorrente of pendentes) {
+    try {
+      if (!recorrente.empresa.focusNfeTokenEncrypted) {
+        throw new Error("Empresa sem token da Focus NFe configurado.");
+      }
+
+      await emitirNotaParaEmpresa({
+        empresa: recorrente.empresa,
+        cliente: recorrente.cliente,
+        descricaoServico: recorrente.descricaoServico,
+        valor: Number(recorrente.valor),
+        notaRecorrenteId: recorrente.id,
+      });
+
+      await prisma.notaRecorrente.update({
+        where: { id: recorrente.id },
+        data: { ultimaExecucao: new Date() },
+      });
+
+      sucesso += 1;
+      detalhes.push({ id: recorrente.id, ok: true });
+    } catch (err) {
+      falhas += 1;
+      const mensagem = err instanceof Error ? err.message : "Erro desconhecido.";
+      detalhes.push({ id: recorrente.id, ok: false, erro: mensagem });
+    }
+  }
+
+  return NextResponse.json({
+    processadas: pendentes.length,
+    sucesso,
+    falhas,
+    detalhes,
+  });
 }
