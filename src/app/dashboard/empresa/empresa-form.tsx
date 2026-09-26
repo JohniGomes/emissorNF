@@ -13,7 +13,7 @@ interface EmpresaFormProps {
     razaoSocial: string;
     nomeFantasia: string | null;
     cnpj: string;
-    inscricaoMunicipal: string;
+    inscricaoMunicipal: string | null;
     regimeTributario: string;
     municipioCodigoIbge: string;
     uf: string;
@@ -233,17 +233,16 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
 
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Inscrição municipal *
+            Inscrição municipal
           </label>
           <input
             name="inscricaoMunicipal"
-            required
             value={inscricaoMunicipal}
             onChange={(e) => setInscricaoMunicipal(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Não é possível buscar automaticamente — consulte no cartão CNPJ/prefeitura.
+            Opcional — muitos MEIs não têm. Não é possível buscar automaticamente; consulte no cartão CNPJ/prefeitura se tiver.
           </p>
         </div>
       </div>

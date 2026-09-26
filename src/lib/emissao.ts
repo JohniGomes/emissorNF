@@ -42,7 +42,7 @@ export async function emitirNotaParaEmpresa({
     data_emissao: new Date().toISOString(),
     prestador: {
       cnpj: empresa.cnpj,
-      inscricao_municipal: empresa.inscricaoMunicipal,
+      inscricao_municipal: empresa.inscricaoMunicipal ?? undefined,
     },
     tomador: {
       cnpj_cpf: cliente.documento,

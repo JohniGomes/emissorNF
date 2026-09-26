@@ -25,7 +25,7 @@ export interface EmitirNfsePayload {
   data_emissao: string; // ISO date
   prestador: {
     cnpj: string;
-    inscricao_municipal: string;
+    inscricao_municipal?: string;
   };
   tomador: {
     cnpj_cpf: string;
@@ -57,7 +57,7 @@ export interface CriarEmpresaFocusNfeParams {
   razaoSocial: string;
   nomeFantasia?: string | null;
   cnpj: string;
-  inscricaoMunicipal: string;
+  inscricaoMunicipal?: string | null;
   regimeTributario: string;
   logradouro?: string | null;
   numero?: string | null;
@@ -87,7 +87,7 @@ export async function criarEmpresaFocusNfe(
 ): Promise<CriarEmpresaFocusNfeResponse> {
   const numeroLimpo = dados.numero?.replace(/\D/g, "");
   const cepLimpo = dados.cep?.replace(/\D/g, "");
-  const inscricaoMunicipalLimpa = dados.inscricaoMunicipal.replace(/\D/g, "");
+  const inscricaoMunicipalLimpa = dados.inscricaoMunicipal?.replace(/\D/g, "");
 
   const body = {
     nome: dados.razaoSocial,

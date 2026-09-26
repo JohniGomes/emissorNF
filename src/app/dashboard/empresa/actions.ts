@@ -48,7 +48,7 @@ export async function salvarEmpresa(
   const razaoSocial = formData.get("razaoSocial") as string;
   const nomeFantasia = (formData.get("nomeFantasia") as string) || null;
   const cnpj = formData.get("cnpj") as string;
-  const inscricaoMunicipal = formData.get("inscricaoMunicipal") as string;
+  const inscricaoMunicipal = (formData.get("inscricaoMunicipal") as string) || null;
   const regimeTributario = formData.get("regimeTributario") as string;
   const logradouro = (formData.get("logradouro") as string) || null;
   const numero = (formData.get("numero") as string) || null;
@@ -58,14 +58,7 @@ export async function salvarEmpresa(
   const uf = formData.get("uf") as string;
   const cep = (formData.get("cep") as string) || null;
 
-  if (
-    !razaoSocial ||
-    !cnpj ||
-    !inscricaoMunicipal ||
-    !regimeTributario ||
-    !municipioCodigoIbge ||
-    !uf
-  ) {
+  if (!razaoSocial || !cnpj || !regimeTributario || !municipioCodigoIbge || !uf) {
     return { error: "Preencha todos os campos obrigatórios." };
   }
 

@@ -27,7 +27,7 @@ model Empresa {
   razaoSocial       String
   nomeFantasia      String?
   cnpj              String   @unique
-  inscricaoMunicipal String
+  inscricaoMunicipal String?
   regimeTributario  String
   municipioCodigoIbge String
   uf                String
