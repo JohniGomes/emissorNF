@@ -1,7 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
-import { salvarEmpresa, type EmpresaState } from "./actions";
+import { useActionState, useState } from "react";
+import {
+  salvarEmpresa,
+  buscarDadosCnpjAction,
+  type EmpresaState,
+  type BuscarCnpjState,
+} from "./actions";
 
 interface EmpresaFormProps {
   defaultValues?: {
@@ -12,25 +17,112 @@ interface EmpresaFormProps {
     regimeTributario: string;
     municipioCodigoIbge: string;
     uf: string;
-    focusNfeAmbiente: string;
-    temToken: boolean;
   };
 }
 
-const initialState: EmpresaState = {};
+const initialEmpresaState: EmpresaState = {};
+const initialCnpjState: BuscarCnpjState = {};
 
 export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
-  const [state, formAction, pending] = useActionState(salvarEmpresa, initialState);
+  const [state, formAction, pending] = useActionState(
+    salvarEmpresa,
+    initialEmpresaState,
+  );
+
+  const jaExiste = !!defaultValues;
+
+  const [cnpj, setCnpj] = useState(defaultValues?.cnpj ?? "");
+  const [razaoSocial, setRazaoSocial] = useState(defaultValues?.razaoSocial ?? "");
+  const [nomeFantasia, setNomeFantasia] = useState(defaultValues?.nomeFantasia ?? "");
+  const [logradouro, setLogradouro] = useState("");
+  const [numero, setNumero] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [cep, setCep] = useState("");
+  const [uf, setUf] = useState(defaultValues?.uf ?? "");
+  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState(
+    defaultValues?.municipioCodigoIbge ?? "",
+  );
+  const [regimeTributario, setRegimeTributario] = useState(
+    defaultValues?.regimeTributario ?? "",
+  );
+  const [inscricaoMunicipal, setInscricaoMunicipal] = useState(
+    defaultValues?.inscricaoMunicipal ?? "",
+  );
+
+  const [buscaState, setBuscaState] = useState<BuscarCnpjState>(initialCnpjState);
+  const [buscando, setBuscando] = useState(false);
+
+  async function handleBuscarCnpj() {
+    setBuscando(true);
+    setBuscaState(initialCnpjState);
+
+    const formData = new FormData();
+    formData.set("cnpj", cnpj);
+    const resultado = await buscarDadosCnpjAction(initialCnpjState, formData);
+    setBuscaState(resultado);
+    setBuscando(false);
+
+    if (resultado.dados) {
+      const d = resultado.dados;
+      setRazaoSocial(d.razaoSocial);
+      setNomeFantasia(d.nomeFantasia ?? "");
+      setLogradouro(d.logradouro ?? "");
+      setNumero(d.numero ?? "");
+      setBairro(d.bairro ?? "");
+      setMunicipio(d.municipio ?? "");
+      setCep(d.cep ?? "");
+      setUf(d.uf ?? "");
+      setMunicipioCodigoIbge(d.codigoMunicipioIbge ?? "");
+      if (d.regimeTributarioSugerido) {
+        setRegimeTributario(d.regimeTributarioSugerido);
+      }
+    }
+  }
 
   return (
     <form action={formAction} className="max-w-xl space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700">CNPJ *</label>
+        <div className="mt-1 flex gap-2">
+          <input
+            name="cnpj"
+            required
+            readOnly={jaExiste}
+            value={cnpj}
+            onChange={(e) => setCnpj(e.target.value)}
+            placeholder="00.000.000/0000-00"
+            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
+          />
+          {!jaExiste && (
+            <button
+              type="button"
+              onClick={handleBuscarCnpj}
+              disabled={buscando || !cnpj}
+              className="whitespace-nowrap rounded-md border border-indigo-300 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
+            >
+              {buscando ? "Buscando..." : "Buscar dados"}
+            </button>
+          )}
+        </div>
+        {buscaState.error && (
+          <p className="mt-1 text-sm text-red-600">{buscaState.error}</p>
+        )}
+        {buscaState.dados && (
+          <p className="mt-1 text-sm text-green-600">
+            Dados encontrados! Confira e complete abaixo.
+          </p>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">Razão social *</label>
           <input
             name="razaoSocial"
             required
-            defaultValue={defaultValues?.razaoSocial}
+            value={razaoSocial}
+            onChange={(e) => setRazaoSocial(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
@@ -39,29 +131,83 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           <label className="block text-sm font-medium text-gray-700">Nome fantasia</label>
           <input
             name="nomeFantasia"
-            defaultValue={defaultValues?.nomeFantasia ?? ""}
+            value={nomeFantasia}
+            onChange={(e) => setNomeFantasia(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700">Logradouro</label>
+          <input
+            name="logradouro"
+            value={logradouro}
+            onChange={(e) => setLogradouro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">CNPJ *</label>
+          <label className="block text-sm font-medium text-gray-700">Número</label>
           <input
-            name="cnpj"
+            name="numero"
+            value={numero}
+            onChange={(e) => setNumero(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Bairro</label>
+          <input
+            name="bairro"
+            value={bairro}
+            onChange={(e) => setBairro(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Município</label>
+          <input
+            name="municipio"
+            value={municipio}
+            onChange={(e) => setMunicipio(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">UF *</label>
+          <input
+            name="uf"
             required
-            defaultValue={defaultValues?.cnpj}
+            maxLength={2}
+            value={uf}
+            onChange={(e) => setUf(e.target.value.toUpperCase())}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm uppercase"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">CEP</label>
+          <input
+            name="cep"
+            value={cep}
+            onChange={(e) => setCep(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Inscrição municipal *
+            Código IBGE do município *
           </label>
           <input
-            name="inscricaoMunicipal"
+            name="municipioCodigoIbge"
             required
-            defaultValue={defaultValues?.inscricaoMunicipal}
+            value={municipioCodigoIbge}
+            onChange={(e) => setMunicipioCodigoIbge(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
         </div>
@@ -73,7 +219,8 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           <select
             name="regimeTributario"
             required
-            defaultValue={defaultValues?.regimeTributario}
+            value={regimeTributario}
+            onChange={(e) => setRegimeTributario(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           >
             <option value="">Selecione</option>
@@ -84,77 +231,21 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">UF *</label>
-          <input
-            name="uf"
-            required
-            maxLength={2}
-            defaultValue={defaultValues?.uf}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm uppercase"
-          />
-        </div>
-
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Código IBGE do município *
+            Inscrição municipal *
           </label>
           <input
-            name="municipioCodigoIbge"
+            name="inscricaoMunicipal"
             required
-            defaultValue={defaultValues?.municipioCodigoIbge}
+            value={inscricaoMunicipal}
+            onChange={(e) => setInscricaoMunicipal(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Consulte em{" "}
-            <a
-              href="https://www.ibge.gov.br/explica/codigos-dos-municipios.php"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-600 hover:underline"
-            >
-              ibge.gov.br
-            </a>
+            Não é possível buscar automaticamente — consulte no cartão CNPJ/prefeitura.
           </p>
         </div>
-      </div>
-
-      <hr className="border-gray-200" />
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Token Focus NFe {defaultValues?.temToken && "(já configurado — deixe em branco para manter)"}
-        </label>
-        <input
-          name="focusNfeToken"
-          type="password"
-          placeholder={defaultValues?.temToken ? "••••••••" : ""}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          Gerado no painel da{" "}
-          <a
-            href="https://focusnfe.com.br"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-indigo-600 hover:underline"
-          >
-            Focus NFe
-          </a>{" "}
-          para esta empresa (use o token de homologação/sandbox por enquanto).
-        </p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Ambiente Focus NFe</label>
-        <select
-          name="focusNfeAmbiente"
-          defaultValue={defaultValues?.focusNfeAmbiente ?? "sandbox"}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-        >
-          <option value="sandbox">Sandbox (homologação)</option>
-          <option value="producao">Produção</option>
-        </select>
       </div>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}

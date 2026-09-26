@@ -28,8 +28,6 @@ export default async function EmpresaPage() {
                 regimeTributario: empresa.regimeTributario,
                 municipioCodigoIbge: empresa.municipioCodigoIbge,
                 uf: empresa.uf,
-                focusNfeAmbiente: empresa.focusNfeAmbiente,
-                temToken: !!empresa.focusNfeTokenEncrypted,
               }
             : undefined
         }
