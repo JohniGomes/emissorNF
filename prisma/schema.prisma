@@ -19,6 +19,19 @@ model User {
   empresas Empresa[]
 }
 
+/**
+ * Registra tentativas de login que falharam, só pra permitir rate limiting
+ * (bloquear depois de N tentativas por e-mail numa janela de tempo). Nunca
+ * grava a senha, só o e-mail tentado e quando foi.
+ */
+model TentativaLoginFalha {
+  id        String   @id @default(cuid())
+  email     String
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+}
+
 model Empresa {
   id                String   @id @default(cuid())
   userId            String
