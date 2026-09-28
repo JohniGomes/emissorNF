@@ -21,7 +21,10 @@ const amaticSc = Amatic_SC({
 
 export const metadata: Metadata = {
   title: "Notarium",
-  description: "Sistema de emissão de Nota Fiscal para MEI e pequenas empresas",
+  description: "Simplificando a emissão das suas Notas Fiscais",
+  icons: {
+    icon: "/notarium-mark.webp",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
