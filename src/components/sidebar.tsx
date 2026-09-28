@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FilePlus2, FileText, Users, Gift } from "lucide-react";
+import { LogoMark } from "./logo-mark";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -25,7 +26,8 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <div className="bg-brand-sidebar flex h-full w-64 flex-col text-white">
-      <div className="flex items-center px-6 py-5">
+      <div className="flex items-center gap-2 px-6 py-5">
+        <LogoMark size={28} />
         <span
           className="text-3xl leading-none tracking-wide text-white"
           style={{ fontFamily: "var(--font-amatic)" }}
