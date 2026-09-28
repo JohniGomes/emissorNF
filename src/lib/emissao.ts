@@ -1,7 +1,11 @@
 import { Prisma, type Empresa, type Cliente, type Nota } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
-import { FocusNfeClient, type EmitirNfsePayload } from "@/lib/focusnfe";
+import {
+  FocusNfeClient,
+  type EmitirNfsePayload,
+  type EmitirDpsNacionalPayload,
+} from "@/lib/focusnfe";
 import { registrarLog } from "@/lib/auditoria";
 
 interface EmitirNotaParaEmpresaParams {
@@ -11,6 +15,8 @@ interface EmitirNotaParaEmpresaParams {
   valor: number;
   notaRecorrenteId?: string;
   idempotencyKey?: string;
+  // Obrigatório apenas para empresas MEI (NFS-e Nacional).
+  codigoTributacaoNacionalIss?: string;
 }
 
 /**
@@ -25,17 +31,25 @@ export async function emitirNotaParaEmpresa({
   valor,
   notaRecorrenteId,
   idempotencyKey,
+  codigoTributacaoNacionalIss,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
     throw new Error("Empresa sem token da Focus NFe configurado.");
   }
 
-  if (empresa.regimeTributario === "MEI") {
-    // MEI é obrigado a emitir pelo padrão NFS-e Nacional (DPS), que tem um
-    // payload diferente da NFS-e clássica usada abaixo. Ainda não implementado.
-    throw new Error(
-      "Emissão para empresas MEI (NFS-e Nacional) ainda não está disponível — em breve.",
-    );
+  const ehMei = empresa.regimeTributario === "MEI";
+
+  if (ehMei) {
+    if (!codigoTributacaoNacionalIss) {
+      throw new Error(
+        "Informe o código de tributação nacional do ISS referente ao serviço.",
+      );
+    }
+    if (!empresa.codigoOpcaoSimplesNacional) {
+      throw new Error(
+        "Complete o cadastro fiscal da empresa (código de opção pelo Simples Nacional) antes de emitir notas.",
+      );
+    }
   }
 
   let nota: Nota;
@@ -49,6 +63,7 @@ export async function emitirNotaParaEmpresa({
         status: "PROCESSANDO",
         notaRecorrenteId,
         idempotencyKey,
+        codigoTributacaoNacionalIss: ehMei ? codigoTributacaoNacionalIss : undefined,
       },
     });
   } catch (err) {
@@ -68,32 +83,6 @@ export async function emitirNotaParaEmpresa({
     throw err;
   }
 
-  const payload: EmitirNfsePayload = {
-    data_emissao: new Date().toISOString(),
-    prestador: {
-      cnpj: empresa.cnpj,
-      inscricao_municipal: empresa.inscricaoMunicipal ?? undefined,
-      codigo_municipio: empresa.municipioCodigoIbge,
-    },
-    tomador: {
-      cnpj_cpf: cliente.documento,
-      razao_social: cliente.nome,
-      email: cliente.email ?? undefined,
-      endereco: {
-        logradouro: cliente.logradouro ?? undefined,
-        numero: cliente.numero ?? undefined,
-        bairro: cliente.bairro ?? undefined,
-        codigo_municipio: empresa.municipioCodigoIbge,
-        uf: cliente.uf ?? undefined,
-        cep: cliente.cep ?? undefined,
-      },
-    },
-    servico: {
-      discriminacao: descricaoServico,
-      valor_servicos: valor,
-    },
-  };
-
   try {
     const token = decrypt(empresa.focusNfeTokenEncrypted);
     const client = new FocusNfeClient({
@@ -101,7 +90,16 @@ export async function emitirNotaParaEmpresa({
       ambiente: empresa.focusNfeAmbiente === "producao" ? "producao" : "sandbox",
     });
 
-    const resposta = await client.emitirNfse(nota.id, payload);
+    const resposta = ehMei
+      ? await emitirViaNfseNacional(client, empresa, cliente, nota.id, {
+          descricaoServico,
+          valor,
+          codigoTributacaoNacionalIss: codigoTributacaoNacionalIss!,
+        })
+      : await client.emitirNfse(nota.id, montarPayloadNfseClassica(empresa, cliente, {
+          descricaoServico,
+          valor,
+        }));
 
     const statusFinal =
       resposta.status === "erro_autorizacao" || resposta.erros?.length
@@ -124,7 +122,7 @@ export async function emitirNotaParaEmpresa({
       empresaId: empresa.id,
       acao: statusFinal === "ERRO" ? "nota.emitir.erro" : "nota.emitir.sucesso",
       entidadeId: nota.id,
-      detalhes: { valor, clienteId: cliente.id },
+      detalhes: { valor, clienteId: cliente.id, viaNfseNacional: ehMei },
     });
 
     return notaAtualizada;
@@ -141,9 +139,83 @@ export async function emitirNotaParaEmpresa({
       empresaId: empresa.id,
       acao: "nota.emitir.erro",
       entidadeId: nota.id,
-      detalhes: { valor, clienteId: cliente.id },
+      detalhes: { valor, clienteId: cliente.id, viaNfseNacional: ehMei },
     });
 
     return notaComErro;
   }
+}
+
+function montarPayloadNfseClassica(
+  empresa: Empresa,
+  cliente: Cliente,
+  dados: { descricaoServico: string; valor: number },
+): EmitirNfsePayload {
+  return {
+    data_emissao: new Date().toISOString(),
+    prestador: {
+      cnpj: empresa.cnpj,
+      inscricao_municipal: empresa.inscricaoMunicipal ?? undefined,
+      codigo_municipio: empresa.municipioCodigoIbge,
+    },
+    tomador: {
+      cnpj_cpf: cliente.documento,
+      razao_social: cliente.nome,
+      email: cliente.email ?? undefined,
+      endereco: {
+        logradouro: cliente.logradouro ?? undefined,
+        numero: cliente.numero ?? undefined,
+        bairro: cliente.bairro ?? undefined,
+        codigo_municipio: empresa.municipioCodigoIbge,
+        uf: cliente.uf ?? undefined,
+        cep: cliente.cep ?? undefined,
+      },
+    },
+    servico: {
+      discriminacao: dados.descricaoServico,
+      valor_servicos: dados.valor,
+    },
+  };
+}
+
+/**
+ * Emissão via NFS-e Nacional (DPS), obrigatória para empresas MEI. Reserva um
+ * número sequencial de DPS atômico (série fixa 1) antes de montar o payload —
+ * a numeração é nossa responsabilidade, a Focus não gera isso por nós.
+ */
+async function emitirViaNfseNacional(
+  client: FocusNfeClient,
+  empresa: Empresa,
+  cliente: Cliente,
+  notaId: string,
+  dados: { descricaoServico: string; valor: number; codigoTributacaoNacionalIss: string },
+) {
+  const empresaAtualizada = await prisma.empresa.update({
+    where: { id: empresa.id },
+    data: { proximoNumeroDps: { increment: 1 } },
+    select: { proximoNumeroDps: true },
+  });
+  const numeroDps = empresaAtualizada.proximoNumeroDps - 1;
+
+  const cnpjCliente = cliente.documento.replace(/\D/g, "").length === 14;
+
+  const payload: EmitirDpsNacionalPayload = {
+    data_emissao: new Date().toISOString(),
+    data_competencia: new Date().toISOString().slice(0, 10),
+    serie_dps: 1,
+    numero_dps: numeroDps,
+    emitente_dps: "1",
+    codigo_municipio_emissora: Number(empresa.municipioCodigoIbge),
+    cnpj_prestador: empresa.cnpj.replace(/\D/g, ""),
+    codigo_opcao_simples_nacional: empresa.codigoOpcaoSimplesNacional!,
+    regime_especial_tributacao: empresa.regimeEspecialTributacao ?? undefined,
+    cnpj_tomador: cnpjCliente ? cliente.documento.replace(/\D/g, "") : undefined,
+    cpf_tomador: cnpjCliente ? undefined : cliente.documento.replace(/\D/g, ""),
+    codigo_municipio_prestacao: empresa.municipioCodigoIbge,
+    codigo_tributacao_nacional_iss: dados.codigoTributacaoNacionalIss,
+    descricao_servico: dados.descricaoServico,
+    valor_servico: dados.valor,
+  };
+
+  return client.emitirDpsNacional(notaId, payload);
 }

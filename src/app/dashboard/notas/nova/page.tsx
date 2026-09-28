@@ -21,7 +21,7 @@ export default async function NovaNotaPage() {
   return (
     <div>
       <h1 className="mb-6 text-xl font-semibold text-gray-900">Emitir nota</h1>
-      <NotaForm clientes={clientes} />
+      <NotaForm clientes={clientes} ehMei={empresa.regimeTributario === "MEI"} />
     </div>
   );
 }

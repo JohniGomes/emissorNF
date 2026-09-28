@@ -50,6 +50,13 @@ model Empresa {
   // nem a senha aqui, isso fica só na Focus NFe.
   certificadoDigitalConfigurado Boolean @default(false)
 
+  // Classificação fiscal exigida pela NFS-e Nacional (DPS), usada só por
+  // empresas MEI. Não temos como inferir esses códigos com segurança —
+  // o próprio usuário/contador preenche, e a Focus valida antes de autorizar.
+  codigoOpcaoSimplesNacional String?
+  regimeEspecialTributacao   String?
+  proximoNumeroDps           Int     @default(1)
+
   // Assinatura (cada assinatura = 1 CNPJ). Pagamento mock por enquanto.
   planoId         String?
   cicloCobranca   String? // "mensal" | "anual"
@@ -100,6 +107,10 @@ model Nota {
 
   descricaoServico String
   valor            Decimal @db.Decimal(12, 2)
+
+  // Só preenchido para emissão via NFS-e Nacional (empresas MEI) — código de
+  // tributação nacional do ISS referente ao serviço prestado.
+  codigoTributacaoNacionalIss String?
 
   status        StatusNota @default(PENDENTE)
   numero        String?

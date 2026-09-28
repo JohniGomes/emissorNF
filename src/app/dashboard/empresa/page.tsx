@@ -35,13 +35,12 @@ export default async function EmpresaPage() {
           municipioCodigoIbge: empresa.municipioCodigoIbge,
           cep: empresa.cep,
           uf: empresa.uf,
+          codigoOpcaoSimplesNacional: empresa.codigoOpcaoSimplesNacional,
+          regimeEspecialTributacao: empresa.regimeEspecialTributacao,
         }}
       />
 
-      <CertificadoDigitalForm
-        regimeTributario={empresa.regimeTributario}
-        jaConfigurado={empresa.certificadoDigitalConfigurado}
-      />
+      <CertificadoDigitalForm jaConfigurado={empresa.certificadoDigitalConfigurado} />
     </div>
   );
 }

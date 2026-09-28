@@ -29,10 +29,12 @@ export async function emitirNota(
     };
   }
 
-  if (empresa.regimeTributario === "MEI") {
+  const ehMei = empresa.regimeTributario === "MEI";
+
+  if (ehMei && !empresa.codigoOpcaoSimplesNacional) {
     return {
       error:
-        "Emissão para empresas MEI (NFS-e Nacional) ainda não está disponível — em breve.",
+        "Complete o cadastro fiscal da empresa (código de opção pelo Simples Nacional) na página Empresa antes de emitir notas.",
     };
   }
 
@@ -40,6 +42,12 @@ export async function emitirNota(
   const descricaoServico = formData.get("descricaoServico") as string;
   const valorStr = formData.get("valor") as string;
   const idempotencyKey = (formData.get("idempotencyKey") as string) || undefined;
+  const codigoTributacaoNacionalIss =
+    (formData.get("codigoTributacaoNacionalIss") as string) || undefined;
+
+  if (ehMei && !codigoTributacaoNacionalIss) {
+    return { error: "Informe o código de tributação nacional do ISS." };
+  }
 
   if (!clienteId || !descricaoServico || !valorStr) {
     return { error: "Preencha todos os campos." };
@@ -84,7 +92,14 @@ export async function emitirNota(
     }
   }
 
-  await emitirNotaParaEmpresa({ empresa, cliente, descricaoServico, valor, idempotencyKey });
+  await emitirNotaParaEmpresa({
+    empresa,
+    cliente,
+    descricaoServico,
+    valor,
+    idempotencyKey,
+    codigoTributacaoNacionalIss,
+  });
 
   revalidatePath("/dashboard/notas");
   redirect("/dashboard/notas");

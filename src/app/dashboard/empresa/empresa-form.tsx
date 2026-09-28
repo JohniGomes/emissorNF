@@ -24,6 +24,8 @@ export interface EmpresaDefaultValues {
   municipioCodigoIbge: string;
   cep: string | null;
   uf: string;
+  codigoOpcaoSimplesNacional: string | null;
+  regimeEspecialTributacao: string | null;
 }
 
 interface EmpresaFormProps {
@@ -62,6 +64,14 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
   const [inscricaoMunicipal, setInscricaoMunicipal] = useState(
     defaultValues?.inscricaoMunicipal ?? "",
   );
+  const [codigoOpcaoSimplesNacional, setCodigoOpcaoSimplesNacional] = useState(
+    defaultValues?.codigoOpcaoSimplesNacional ?? "",
+  );
+  const [regimeEspecialTributacao, setRegimeEspecialTributacao] = useState(
+    defaultValues?.regimeEspecialTributacao ?? "",
+  );
+
+  const ehMei = regimeTributario === "MEI";
 
   const [buscaState, setBuscaState] = useState<BuscarCnpjState>(initialCnpjState);
   const [buscando, setBuscando] = useState(false);
@@ -273,6 +283,42 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
             <option value="LUCRO_REAL">Lucro Real</option>
           </select>
         </div>
+
+        {ehMei && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Código de opção pelo Simples Nacional *
+              </label>
+              <input
+                name="codigoOpcaoSimplesNacional"
+                required={ehMei}
+                value={codigoOpcaoSimplesNacional}
+                onChange={(e) => setCodigoOpcaoSimplesNacional(e.target.value)}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Exigido pela NFS-e Nacional para emitir notas como MEI. Confirme o
+                valor correto com seu contador ou a tabela oficial da NFS-e Nacional.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Regime especial de tributação
+              </label>
+              <input
+                name="regimeEspecialTributacao"
+                value={regimeEspecialTributacao}
+                onChange={(e) => setRegimeEspecialTributacao(e.target.value)}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Opcional. Deixe em branco se não tiver regime especial municipal.
+              </p>
+            </div>
+          </>
+        )}
 
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">

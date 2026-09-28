@@ -28,6 +28,8 @@ export interface DadosEmpresaForm {
   municipioCodigoIbge: string;
   uf: string;
   cep: string | null;
+  codigoOpcaoSimplesNacional: string | null;
+  regimeEspecialTributacao: string | null;
 }
 
 export function lerDadosEmpresaDoForm(formData: FormData): DadosEmpresaForm {
@@ -47,6 +49,9 @@ export function lerDadosEmpresaDoForm(formData: FormData): DadosEmpresaForm {
     municipioCodigoIbge: formData.get("municipioCodigoIbge") as string,
     uf: formData.get("uf") as string,
     cep: (formData.get("cep") as string) || null,
+    codigoOpcaoSimplesNacional:
+      (formData.get("codigoOpcaoSimplesNacional") as string) || null,
+    regimeEspecialTributacao: (formData.get("regimeEspecialTributacao") as string) || null,
   };
 }
 
@@ -90,6 +95,8 @@ export async function salvarDadosEmpresa(
     municipioCodigoIbge: dados.municipioCodigoIbge,
     cep: dados.cep,
     uf: dados.uf,
+    codigoOpcaoSimplesNacional: dados.codigoOpcaoSimplesNacional,
+    regimeEspecialTributacao: dados.regimeEspecialTributacao,
   };
 
   if (empresaExistente) {

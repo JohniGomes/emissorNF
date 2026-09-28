@@ -47,6 +47,24 @@ export interface EmitirNfsePayload {
   };
 }
 
+export interface EmitirDpsNacionalPayload {
+  data_emissao: string; // ISO date-time
+  data_competencia: string; // ISO date (yyyy-mm-dd)
+  serie_dps: number;
+  numero_dps: number;
+  emitente_dps: string;
+  codigo_municipio_emissora: number;
+  cnpj_prestador: string;
+  codigo_opcao_simples_nacional: string;
+  regime_especial_tributacao?: string;
+  cnpj_tomador?: string;
+  cpf_tomador?: string;
+  codigo_municipio_prestacao: string;
+  codigo_tributacao_nacional_iss: string;
+  descricao_servico: string;
+  valor_servico: number;
+}
+
 const REGIME_TRIBUTARIO_FOCUS: Record<string, number> = {
   SIMPLES_NACIONAL: 1,
   LUCRO_PRESUMIDO: 3,
@@ -241,6 +259,38 @@ export class FocusNfeClient {
 
     return normalizeFocusResponse(response, await response.json());
   }
+
+  /**
+   * Emite uma NFS-e Nacional (DPS) — usada por empresas MEI, que a Focus NFe
+   * exige que emitam por esse padrão em vez da NFS-e clássica. `referencia` é
+   * o identificador único (o id da Nota no nosso banco), igual à NFS-e clássica.
+   */
+  async emitirDpsNacional(
+    referencia: string,
+    payload: EmitirDpsNacionalPayload,
+  ): Promise<FocusNfeResponse> {
+    const response = await fetch(`${this.baseUrl}/v2/nfsen?ref=${referencia}`, {
+      method: "POST",
+      headers: {
+        Authorization: authHeader(this.token),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return normalizeFocusResponse(response, await response.json());
+  }
+
+  async consultarDpsNacional(referencia: string): Promise<FocusNfeResponse> {
+    const response = await fetch(`${this.baseUrl}/v2/nfsen/${referencia}`, {
+      method: "GET",
+      headers: {
+        Authorization: authHeader(this.token),
+      },
+    });
+
+    return normalizeFocusResponse(response, await response.json());
+  }
 }
 
 /**
@@ -255,11 +305,13 @@ function normalizeFocusResponse(
   data: FocusNfeResponse,
 ): FocusNfeResponse {
   if (!response.ok && (!data.erros || data.erros.length === 0)) {
+    // A NFS-e clássica erra com `erros: [...]`; a DPS Nacional erra com um
+    // único `{codigo, mensagem}` no corpo — normalizamos os dois pro mesmo formato.
     return {
       ...data,
       erros: [
         {
-          codigo: String(response.status),
+          codigo: (data.codigo as string | undefined) || String(response.status),
           mensagem:
             (data.mensagem as string | undefined) ||
             "Erro na comunicação com o provedor fiscal.",

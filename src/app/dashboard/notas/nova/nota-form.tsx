@@ -6,12 +6,13 @@ import { emitirNota, type NotaState } from "../actions";
 
 interface NotaFormProps {
   clientes: { id: string; nome: string; documento: string }[];
+  ehMei: boolean;
 }
 
 const initialState: NotaState = {};
 const CLIENTE_MANUAL = "__manual__";
 
-export function NotaForm({ clientes }: NotaFormProps) {
+export function NotaForm({ clientes, ehMei }: NotaFormProps) {
   const [state, formAction, pending] = useActionState(emitirNota, initialState);
   const [clienteId, setClienteId] = useState("");
   const [idempotencyKey] = useState(() => crypto.randomUUID());
@@ -95,6 +96,25 @@ export function NotaForm({ clientes }: NotaFormProps) {
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
+
+      {ehMei && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Código de tributação nacional do ISS *
+          </label>
+          <input
+            name="codigoTributacaoNacionalIss"
+            required
+            placeholder="ex: 010701"
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          />
+          <p className="mt-1 text-xs text-gray-500">
+            Exigido pela NFS-e Nacional para empresas MEI. Consulte a tabela oficial
+            de códigos de tributação nacional do ISS ou seu contador se não souber o
+            código do seu serviço.
+          </p>
+        </div>
+      )}
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 

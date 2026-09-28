@@ -88,13 +88,6 @@ export async function enviarCertificadoDigital(
   });
   if (!empresa) redirect("/onboarding");
 
-  if (empresa.regimeTributario === "MEI") {
-    return {
-      error:
-        "Empresas MEI emitem pela NFS-e Nacional e não usam certificado digital A1 aqui.",
-    };
-  }
-
   if (!empresa.focusNfeEmpresaId) {
     return {
       error:
