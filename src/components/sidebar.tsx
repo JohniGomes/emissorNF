@@ -58,8 +58,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         })}
       </nav>
 
-      <div className="flex items-center justify-center bg-white py-4">
-        <LogoMark size={40} />
+      <div className="flex items-center justify-center py-4">
+        <div className="rounded-md bg-white p-2">
+          <LogoMark size={32} />
+        </div>
       </div>
     </div>
   );
