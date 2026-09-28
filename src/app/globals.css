@@ -40,3 +40,13 @@ body {
 .bg-brand-sidebar {
   background-image: linear-gradient(180deg, #0b2b26 0%, #163832 55%, #051f20 100%);
 }
+
+/* Fundo das áreas de conteúdo: branco com um leve sopro de verde, não sólido */
+.bg-app-surface {
+  background-image: radial-gradient(
+      circle at 0% 0%,
+      rgba(142, 182, 155, 0.16) 0%,
+      transparent 45%
+    ),
+    linear-gradient(160deg, #ffffff 0%, #f5faf7 55%, #eef7f1 100%);
+}

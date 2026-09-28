@@ -19,7 +19,7 @@ export function OnboardingBackdrop() {
           <Bell size={20} className="text-brand-dark" />
           <div className="h-9 w-9 rounded-full btn-gradient" />
         </div>
-        <div className="flex-1 space-y-4 bg-brand-cream p-8">
+        <div className="bg-app-surface flex-1 space-y-4 p-8">
           <div className="h-6 w-56 rounded bg-gray-300/70" />
           <div className="grid grid-cols-2 gap-4">
             <div className="h-24 rounded-lg border border-gray-200 bg-white" />

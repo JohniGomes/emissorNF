@@ -15,7 +15,7 @@ export function DashboardShell({ userName, userEmail, children }: DashboardShell
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-brand-cream">
+    <div className="flex h-screen overflow-hidden bg-white">
       <div className="hidden lg:block">
         <Sidebar />
       </div>
@@ -48,7 +48,7 @@ export function DashboardShell({ userName, userEmail, children }: DashboardShell
           userEmail={userEmail}
           onMenuClick={() => setMobileOpen(true)}
         />
-        <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
+        <main className="bg-app-surface flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
           {children}
         </main>
       </div>
