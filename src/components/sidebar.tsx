@@ -26,8 +26,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <div className="bg-brand-sidebar flex h-full w-64 flex-col text-white">
-      <div className="flex items-center gap-2 px-6 py-5">
-        <LogoMark size={28} />
+      <div className="flex items-center justify-center px-6 py-5">
         <span
           className="text-3xl leading-none tracking-wide text-white"
           style={{ fontFamily: "var(--font-amatic)" }}
@@ -58,6 +57,10 @@ export function Sidebar({ onNavigate }: SidebarProps) {
           );
         })}
       </nav>
+
+      <div className="flex items-center justify-center bg-white py-4">
+        <LogoMark size={40} />
+      </div>
     </div>
   );
 }
