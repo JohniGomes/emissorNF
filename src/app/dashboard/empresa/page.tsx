@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { EmpresaForm } from "./empresa-form";
+import { CertificadoDigitalForm } from "./certificado-digital-form";
 
 export default async function EmpresaPage() {
   const session = await auth();
@@ -35,6 +36,11 @@ export default async function EmpresaPage() {
           cep: empresa.cep,
           uf: empresa.uf,
         }}
+      />
+
+      <CertificadoDigitalForm
+        regimeTributario={empresa.regimeTributario}
+        jaConfigurado={empresa.certificadoDigitalConfigurado}
       />
     </div>
   );

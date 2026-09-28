@@ -134,6 +134,41 @@ export async function criarEmpresaFocusNfe(
   return data;
 }
 
+/**
+ * Envia (ou substitui) o certificado digital A1 (.pfx/.p12) de uma empresa já
+ * cadastrada na Focus NFe. Usa o mesmo token principal da conta da criação —
+ * a empresa é identificada pelo id numérico que a Focus atribuiu a ela.
+ */
+export async function atualizarCertificadoFocusNfe(
+  masterToken: string,
+  focusEmpresaId: number,
+  params: { certificadoBase64: string; senha: string },
+): Promise<void> {
+  const response = await fetch(
+    `${FOCUS_NFE_BASE_URL.producao}/v2/empresas/${focusEmpresaId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: authHeader(masterToken),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        arquivo_certificado_base64: params.certificadoBase64,
+        senha_certificado: params.senha,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    const mensagem =
+      data?.erros?.map((e: { mensagem: string }) => e.mensagem).join("; ") ||
+      data?.mensagem ||
+      "Erro ao enviar o certificado digital para a Focus NFe.";
+    throw new Error(mensagem);
+  }
+}
+
 export interface FocusNfeResponse {
   status: string;
   numero?: string;

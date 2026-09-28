@@ -135,7 +135,10 @@ export async function salvarDadosEmpresa(
 
       await prisma.empresa.update({
         where: { id: novaEmpresa.id },
-        data: { focusNfeTokenEncrypted: encrypt(resultado.token_homologacao) },
+        data: {
+          focusNfeTokenEncrypted: encrypt(resultado.token_homologacao),
+          focusNfeEmpresaId: resultado.id,
+        },
       });
     } catch (err) {
       return {
