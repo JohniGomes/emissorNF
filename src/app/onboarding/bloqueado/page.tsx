@@ -11,7 +11,7 @@ export default function BloqueadoPage() {
         Não podemos te atender agora
       </h1>
       <p className="max-w-sm text-sm text-gray-600">
-        Para utilizar o Emissor NFs é necessário ter uma empresa formalizada e
+        Para utilizar o Notarium é necessário ter uma empresa formalizada e
         com CNPJ ativo.
       </p>
       <p className="mt-2 max-w-sm text-sm text-gray-600">

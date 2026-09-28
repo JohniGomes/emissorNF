@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 function LoginForm() {
   const router = useRouter();
@@ -39,7 +40,12 @@ function LoginForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-xl font-semibold text-gray-900">Entrar</h1>
+        <div className="mb-6 flex justify-center">
+          <Logo size={40} />
+        </div>
+        <h1 className="mb-6 text-center text-xl font-semibold text-gray-900">
+          Entrar
+        </h1>
 
         {registrado && (
           <p className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { registerUser, type RegisterState } from "./actions";
 
 const initialState: RegisterState = {};
@@ -12,7 +13,12 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-6 text-xl font-semibold text-gray-900">Criar conta</h1>
+        <div className="mb-6 flex justify-center">
+          <Logo size={40} />
+        </div>
+        <h1 className="mb-6 text-center text-xl font-semibold text-gray-900">
+          Criar conta
+        </h1>
 
         <form action={formAction} className="space-y-4">
           <div>

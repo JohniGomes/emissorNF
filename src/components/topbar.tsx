@@ -64,10 +64,10 @@ export function Topbar({ userName, userEmail, onMenuClick }: TopbarProps) {
                 <p className="text-gray-600">
                   Fale com a gente pelo e-mail{" "}
                   <a
-                    href="mailto:suporte@emissornfs.com.br"
+                    href="mailto:suporte@notarium.com.br"
                     className="text-brand-brown hover:underline"
                   >
-                    suporte@emissornfs.com.br
+                    suporte@notarium.com.br
                   </a>
                 </p>
               </div>

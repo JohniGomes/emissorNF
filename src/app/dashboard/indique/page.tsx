@@ -8,7 +8,7 @@ export default function IndiquePage() {
       </div>
       <h1 className="text-xl font-semibold text-gray-900">Indique e ganhe</h1>
       <p className="mt-2 max-w-sm text-sm text-gray-500">
-        Em breve você vai poder indicar o Emissor NFs para outros empreendedores
+        Em breve você vai poder indicar o Notarium para outros empreendedores
         e ganhar recompensas. Fique de olho!
       </p>
     </div>

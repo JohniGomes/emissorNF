@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Emissor NFs",
-  description: "Emissão automatizada de NFS-e para MEI e pequenas empresas",
+  title: "Notarium",
+  description: "Sistema de emissão de Nota Fiscal para MEI e pequenas empresas",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -1,4 +1,4 @@
-# Emissor NFs
+# Notarium
 
 Plataforma para automatizar a emissão de NFS-e (notas fiscais de serviço) para MEI, autônomos e pequenas empresas, com foco em eliminar o preenchimento repetitivo e automatizar notas recorrentes.
 

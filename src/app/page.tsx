@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 bg-gray-50 px-4 text-center">
-      <h1 className="text-3xl font-bold text-gray-900">Emissor NFs</h1>
+      <Logo size={64} withTagline />
       <p className="max-w-md text-gray-600">
         Emita notas fiscais de serviço sem burocracia. Cadastre sua empresa, seus
         clientes, e emita notas em segundos.

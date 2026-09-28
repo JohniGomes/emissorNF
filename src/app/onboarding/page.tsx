@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 
 export default async function OnboardingGatePage() {
   const session = await auth();
@@ -17,10 +18,9 @@ export default async function OnboardingGatePage() {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg btn-gradient text-sm font-bold text-white">
-        NF
+      <div className="mb-6">
+        <Logo withTagline />
       </div>
-      <h1 className="mb-2 text-xl font-semibold text-gray-900">Emissor NFs</h1>
       <p className="mb-8 max-w-sm text-sm text-gray-600">
         Emita notas fiscais automaticamente para os serviços prestados pela sua
         empresa.
