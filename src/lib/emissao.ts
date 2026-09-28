@@ -7,6 +7,7 @@ import {
   type EmitirDpsNacionalPayload,
 } from "@/lib/focusnfe";
 import { registrarLog } from "@/lib/auditoria";
+import { formatarErroParaNota } from "@/lib/erros-fiscais";
 
 interface EmitirNotaParaEmpresaParams {
   empresa: Empresa;
@@ -114,7 +115,9 @@ export async function emitirNotaParaEmpresa({
         codigoVerificacao: resposta.codigo_verificacao,
         linkPdf: resposta.url,
         respostaApi: JSON.parse(JSON.stringify(resposta)),
-        erro: resposta.erros?.map((e) => e.mensagem).join("; "),
+        erro: resposta.erros?.length
+          ? formatarErroParaNota(resposta.erros.map((e) => e.mensagem).join("; "))
+          : undefined,
       },
     });
 
@@ -131,7 +134,9 @@ export async function emitirNotaParaEmpresa({
       where: { id: nota.id },
       data: {
         status: "ERRO",
-        erro: err instanceof Error ? err.message : "Erro desconhecido ao emitir nota.",
+        erro: formatarErroParaNota(
+          err instanceof Error ? err.message : "Erro desconhecido ao emitir nota.",
+        ),
       },
     });
 

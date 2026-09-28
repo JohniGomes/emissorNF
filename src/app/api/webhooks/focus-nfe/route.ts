@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { registrarLog } from "@/lib/auditoria";
+import { formatarErroParaNota } from "@/lib/erros-fiscais";
 import type { StatusNota } from "@prisma/client";
 
 interface FocusWebhookPayload {
@@ -102,7 +103,11 @@ export async function POST(request: NextRequest) {
       linkPdf: payload.url ?? nota.linkPdf,
       erro:
         statusNovo === "ERRO"
-          ? payload.erros?.map((e) => e.mensagem).join("; ") || payload.mensagem_sefaz
+          ? formatarErroParaNota(
+              payload.erros?.map((e) => e.mensagem).join("; ") ||
+                payload.mensagem_sefaz ||
+                "Erro não especificado pelo provedor fiscal.",
+            )
           : null,
       respostaApi: JSON.parse(JSON.stringify(payload)),
     },
