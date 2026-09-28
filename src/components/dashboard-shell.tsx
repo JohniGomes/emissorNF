@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
+import { LogoMark } from "./logo-mark";
 
 interface DashboardShellProps {
   userName?: string | null;
@@ -16,8 +17,13 @@ export function DashboardShell({ userName, userEmail, children }: DashboardShell
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
-      <div className="hidden lg:block">
-        <Sidebar />
+      <div className="hidden lg:flex lg:w-64 lg:flex-shrink-0 lg:flex-col">
+        <div className="flex items-center justify-center border-b border-brand-tan/40 bg-white px-4 py-3">
+          <LogoMark size={32} />
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          <Sidebar />
+        </div>
       </div>
 
       {mobileOpen && (
@@ -26,16 +32,19 @@ export function DashboardShell({ userName, userEmail, children }: DashboardShell
             className="absolute inset-0 bg-black/40"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0">
-            <div className="relative h-full">
+          <div className="absolute inset-y-0 left-0 flex w-64 flex-col">
+            <div className="flex items-center justify-between border-b border-brand-tan/40 bg-white px-4 py-3">
+              <LogoMark size={28} />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
-                className="absolute right-3 top-4 z-50 rounded-md p-1 text-white/80 hover:text-white"
+                className="rounded-md p-1 text-brand-dark hover:bg-brand-cream"
                 aria-label="Fechar menu"
               >
                 <X size={20} />
               </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
               <Sidebar onNavigate={() => setMobileOpen(false)} />
             </div>
           </div>
