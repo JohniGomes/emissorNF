@@ -2,21 +2,28 @@ export function LogoMark({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
       <defs>
-        <linearGradient id="notariumLogoGradient" x1="8" y1="12" x2="92" y2="88">
-          <stop offset="0%" stopColor="#8eb69b" />
-          <stop offset="50%" stopColor="#235347" />
-          <stop offset="100%" stopColor="#0b2b26" />
+        <linearGradient id="notariumLogoGlow" x1="20" y1="20" x2="85" y2="85">
+          <stop offset="0%" stopColor="#5eead4" />
+          <stop offset="100%" stopColor="#0f766e" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="96" height="96" rx="22" fill="#051f20" />
+      <path d="M12 14 L66 14 L88 36 L88 90 L12 90 Z" fill="#0b2b26" />
       <path
-        d="M20 74 L38 26 L50 58 L62 30 L74 62 L80 48"
-        stroke="url(#notariumLogoGradient)"
-        strokeWidth="10"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M28 78 L28 26 L72 78 L72 26"
+        stroke="url(#notariumLogoGlow)"
+        strokeWidth="9"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
         fill="none"
       />
+      <path
+        d="M45 45 L45 58 L58 58"
+        stroke="#5eead4"
+        strokeWidth="3"
+        strokeLinecap="square"
+        fill="none"
+      />
+      <rect x="4" y="80" width="10" height="10" fill="#5eead4" />
     </svg>
   );
 }
