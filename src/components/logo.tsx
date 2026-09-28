@@ -10,7 +10,10 @@ export function Logo({ size = 48, withTagline = false }: LogoProps) {
     <div className="flex flex-col items-center gap-2">
       <LogoMark size={size} />
       <div className="text-center">
-        <p className="text-2xl font-extrabold tracking-wide text-gray-900">
+        <p
+          className="text-4xl leading-none tracking-wide text-gray-900"
+          style={{ fontFamily: "var(--font-amatic)" }}
+        >
           NOTARIUM
         </p>
         {withTagline && (
