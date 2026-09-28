@@ -169,6 +169,14 @@ model NotaRecorrente {
   diaDoMes         Int // dia do mês em que a nota deve ser emitida
   ativo            Boolean @default(true)
 
+  // null = sem prazo definido, roda até ser desativada manualmente. Quando
+  // definido, decrementa a cada emissão bem-sucedida e desativa sozinha ao
+  // chegar em zero — é o "emitir pelos próximos X meses" do usuário.
+  mesesRestantes Int?
+
+  // Só usado por empresas MEI (NFS-e Nacional exige esse código por emissão).
+  codigoTributacaoNacionalIss String?
+
   ultimaExecucao DateTime?
 
   createdAt DateTime @default(now())
