@@ -7,14 +7,19 @@ import { emitirNota, type NotaState } from "../actions";
 interface NotaFormProps {
   clientes: { id: string; nome: string; documento: string }[];
   ehMei: boolean;
+  defaultValues?: {
+    clienteId?: string;
+    descricaoServico?: string;
+    valor?: string;
+  };
 }
 
 const initialState: NotaState = {};
 const CLIENTE_MANUAL = "__manual__";
 
-export function NotaForm({ clientes, ehMei }: NotaFormProps) {
+export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
   const [state, formAction, pending] = useActionState(emitirNota, initialState);
-  const [clienteId, setClienteId] = useState("");
+  const [clienteId, setClienteId] = useState(defaultValues?.clienteId ?? "");
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const clienteManualSelecionado = clienteId === CLIENTE_MANUAL;
@@ -82,6 +87,7 @@ export function NotaForm({ clientes, ehMei }: NotaFormProps) {
           name="descricaoServico"
           required
           rows={3}
+          defaultValue={defaultValues?.descricaoServico}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>
@@ -93,6 +99,7 @@ export function NotaForm({ clientes, ehMei }: NotaFormProps) {
           required
           inputMode="decimal"
           placeholder="0,00"
+          defaultValue={defaultValues?.valor}
           className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
       </div>

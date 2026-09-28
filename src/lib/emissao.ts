@@ -219,3 +219,47 @@ async function emitirViaNfseNacional(
 
   return client.emitirDpsNacional(notaId, payload);
 }
+
+/**
+ * Cancela uma Nota já autorizada. Só faz sentido pra notas AUTORIZADA — pedir
+ * cancelamento de uma nota em erro ou já cancelada não tem efeito na Focus e
+ * só confundiria o histórico, então quem chama isso já deve ter checado o status.
+ */
+export async function cancelarNotaParaEmpresa(
+  empresa: Empresa,
+  nota: Nota,
+  justificativa: string,
+): Promise<Nota> {
+  if (!empresa.focusNfeTokenEncrypted) {
+    throw new Error("Empresa sem token da Focus NFe configurado.");
+  }
+
+  const token = decrypt(empresa.focusNfeTokenEncrypted);
+  const client = new FocusNfeClient({
+    token,
+    ambiente: empresa.focusNfeAmbiente === "producao" ? "producao" : "sandbox",
+  });
+
+  const resposta =
+    empresa.regimeTributario === "MEI"
+      ? await client.cancelarDpsNacional(nota.id, justificativa)
+      : await client.cancelarNfse(nota.id, justificativa);
+
+  if (resposta.erros?.length) {
+    throw new Error(resposta.erros.map((e) => e.mensagem).join("; "));
+  }
+
+  const notaCancelada = await prisma.nota.update({
+    where: { id: nota.id },
+    data: { status: "CANCELADA" },
+  });
+
+  await registrarLog({
+    empresaId: empresa.id,
+    acao: "nota.cancelar",
+    entidadeId: nota.id,
+    detalhes: { justificativa },
+  });
+
+  return notaCancelada;
+}

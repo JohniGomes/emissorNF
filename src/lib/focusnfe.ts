@@ -291,6 +291,22 @@ export class FocusNfeClient {
 
     return normalizeFocusResponse(response, await response.json());
   }
+
+  async cancelarDpsNacional(
+    referencia: string,
+    justificativa: string,
+  ): Promise<FocusNfeResponse> {
+    const response = await fetch(`${this.baseUrl}/v2/nfsen/${referencia}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: authHeader(this.token),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ justificativa }),
+    });
+
+    return normalizeFocusResponse(response, await response.json());
+  }
 }
 
 /**

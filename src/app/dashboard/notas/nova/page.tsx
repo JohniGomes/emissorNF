@@ -3,7 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { NotaForm } from "./nota-form";
 
-export default async function NovaNotaPage() {
+export default async function NovaNotaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ clienteId?: string; descricao?: string; valor?: string }>;
+}) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -18,10 +22,25 @@ export default async function NovaNotaPage() {
     select: { id: true, nome: true, documento: true },
   });
 
+  const { clienteId, descricao, valor } = await searchParams;
+  // "Emitir novamente" preenche a partir de uma nota anterior — só se o
+  // cliente ainda existir na carteira da empresa (nunca confiamos no id vindo
+  // da URL sem confirmar que ele pertence a este usuário).
+  const clienteValido =
+    clienteId && clientes.some((c) => c.id === clienteId) ? clienteId : undefined;
+
   return (
     <div>
       <h1 className="mb-6 text-xl font-semibold text-gray-900">Emitir nota</h1>
-      <NotaForm clientes={clientes} ehMei={empresa.regimeTributario === "MEI"} />
+      <NotaForm
+        clientes={clientes}
+        ehMei={empresa.regimeTributario === "MEI"}
+        defaultValues={{
+          clienteId: clienteValido,
+          descricaoServico: descricao,
+          valor: valor,
+        }}
+      />
     </div>
   );
 }

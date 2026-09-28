@@ -2,12 +2,60 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { emitirNotaParaEmpresa } from "@/lib/emissao";
+import { emitirNotaParaEmpresa, cancelarNotaParaEmpresa } from "@/lib/emissao";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 export interface NotaState {
   error?: string;
+}
+
+export interface CancelarNotaState {
+  error?: string;
+}
+
+export async function cancelarNota(
+  _prevState: CancelarNotaState,
+  formData: FormData,
+): Promise<CancelarNotaState> {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+
+  const empresa = await prisma.empresa.findFirst({
+    where: { userId: session.user.id },
+  });
+  if (!empresa) redirect("/dashboard/empresa");
+
+  const notaId = formData.get("notaId") as string;
+  const justificativa = (formData.get("justificativa") as string)?.trim();
+
+  if (!justificativa || justificativa.length < 15) {
+    return { error: "Informe uma justificativa com pelo menos 15 caracteres." };
+  }
+
+  const nota = await prisma.nota.findFirst({
+    where: { id: notaId, empresaId: empresa.id },
+  });
+  if (!nota) {
+    return { error: "Nota não encontrada." };
+  }
+  if (nota.status !== "AUTORIZADA") {
+    return { error: "Só é possível cancelar uma nota autorizada." };
+  }
+
+  try {
+    await cancelarNotaParaEmpresa(empresa, nota, justificativa);
+  } catch (err) {
+    return {
+      error:
+        err instanceof Error
+          ? `Não foi possível cancelar a nota: ${err.message}`
+          : "Não foi possível cancelar a nota.",
+    };
+  }
+
+  revalidatePath("/dashboard/notas");
+  return {};
 }
 
 export async function emitirNota(

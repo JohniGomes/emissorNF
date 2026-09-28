@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
+import { CancelarNotaButton } from "./cancelar-nota-button";
 
 const statusLabel: Record<string, string> = {
   PENDENTE: "Pendente",
@@ -192,47 +193,71 @@ export default async function NotasPage({
                   <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                     Nota
                   </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {notas.map((nota) => (
-                  <tr key={nota.id}>
-                    <td className="px-4 py-2 text-sm text-gray-900">{nota.cliente.nome}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">
-                      {nota.descricaoServico}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-gray-500">
-                      {Number(nota.valor).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </td>
-                    <td className="px-4 py-2 text-sm">
-                      <span
-                        className={`rounded-full px-2 py-1 text-xs font-medium ${statusColor[nota.status]}`}
-                      >
-                        {statusLabel[nota.status]}
-                      </span>
-                      {nota.erro && (
-                        <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-gray-500">
-                      {nota.linkPdf ? (
-                        <a
-                          href={nota.linkPdf}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                {notas.map((nota) => {
+                  const paramsNovamente = new URLSearchParams({
+                    clienteId: nota.clienteId,
+                    descricao: nota.descricaoServico,
+                    valor: Number(nota.valor).toFixed(2).replace(".", ","),
+                  });
+
+                  return (
+                    <tr key={nota.id}>
+                      <td className="px-4 py-2 text-sm text-gray-900">{nota.cliente.nome}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {nota.descricaoServico}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {Number(nota.valor).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </td>
+                      <td className="px-4 py-2 text-sm">
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-medium ${statusColor[nota.status]}`}
+                        >
+                          {statusLabel[nota.status]}
+                        </span>
+                        {nota.erro && (
+                          <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-gray-500">
+                        {nota.linkPdf ? (
+                          <a
+                            href={nota.linkPdf}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-brown hover:underline"
+                          >
+                            Ver PDF
+                          </a>
+                        ) : (
+                          nota.numero || "—"
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-sm">
+                        <Link
+                          href={`/dashboard/notas/nova?${paramsNovamente.toString()}`}
                           className="text-brand-brown hover:underline"
                         >
-                          Ver PDF
-                        </a>
-                      ) : (
-                        nota.numero || "—"
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                          Emitir novamente
+                        </Link>
+                        {nota.status === "AUTORIZADA" && (
+                          <div className="mt-1">
+                            <CancelarNotaButton notaId={nota.id} />
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
