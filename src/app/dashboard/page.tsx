@@ -2,7 +2,13 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Users, FileText, Plus, AlertTriangle } from "lucide-react";
+import { Users, FileText, Plus, AlertTriangle, TrendingUp } from "lucide-react";
+
+interface FaturamentoMensal {
+  mes: Date;
+  quantidade: bigint;
+  total: number | null;
+}
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -14,16 +20,35 @@ export default async function DashboardPage() {
 
   if (!empresa) redirect("/onboarding");
 
-  const [totalClientes, totalNotas, notasComErro] = await Promise.all([
-    prisma.cliente.count({ where: { empresaId: empresa.id } }),
-    prisma.nota.count({ where: { empresaId: empresa.id } }),
-    prisma.nota.findMany({
-      where: { empresaId: empresa.id, status: "ERRO" },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: { id: true, descricaoServico: true, erro: true, createdAt: true },
-    }),
-  ]);
+  const [totalClientes, totalNotas, notasComErro, faturamentoMes, faturamentoMensal] =
+    await Promise.all([
+      prisma.cliente.count({ where: { empresaId: empresa.id } }),
+      prisma.nota.count({ where: { empresaId: empresa.id } }),
+      prisma.nota.findMany({
+        where: { empresaId: empresa.id, status: "ERRO" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, descricaoServico: true, erro: true, createdAt: true },
+      }),
+      prisma.nota.aggregate({
+        where: {
+          empresaId: empresa.id,
+          status: "AUTORIZADA",
+          createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+        },
+        _sum: { valor: true },
+      }),
+      prisma.$queryRaw<FaturamentoMensal[]>`
+        SELECT date_trunc('month', "createdAt") AS mes,
+               COUNT(*) AS quantidade,
+               SUM("valor")::float AS total
+        FROM "Nota"
+        WHERE "empresaId" = ${empresa.id} AND "status" = 'AUTORIZADA'
+        GROUP BY mes
+        ORDER BY mes DESC
+        LIMIT 6
+      `,
+    ]);
 
   const pendencias = [
     ...(!empresa.focusNfeTokenEncrypted
@@ -54,7 +79,7 @@ export default async function DashboardPage() {
         Aqui está um resumo da sua conta.
       </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           href="/dashboard/clientes"
           className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 transition-colors hover:border-brand-tan"
@@ -80,6 +105,21 @@ export default async function DashboardPage() {
             <p className="text-sm text-gray-500">Notas emitidas</p>
           </div>
         </Link>
+
+        <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-cream text-brand-dark">
+            <TrendingUp size={20} />
+          </div>
+          <div>
+            <p className="text-2xl font-semibold text-gray-900">
+              {Number(faturamentoMes._sum.valor ?? 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </p>
+            <p className="text-sm text-gray-500">Faturado neste mês</p>
+          </div>
+        </div>
       </div>
 
       <Link
@@ -109,6 +149,56 @@ export default async function DashboardPage() {
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      )}
+
+      {faturamentoMensal.length > 0 && (
+        <div className="mt-8">
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            Faturamento por mês (notas autorizadas)
+          </h2>
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Mês
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Notas
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Faturado
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {faturamentoMensal.map((linha) => (
+                  <tr key={linha.mes.toString()}>
+                    <td className="px-4 py-2 text-sm text-gray-900">
+                      {(() => {
+                        const texto = new Date(linha.mes).toLocaleDateString("pt-BR", {
+                          month: "long",
+                          year: "numeric",
+                          timeZone: "UTC",
+                        });
+                        return texto.charAt(0).toUpperCase() + texto.slice(1);
+                      })()}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-500">
+                      {Number(linha.quantidade)}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-500">
+                      {Number(linha.total ?? 0).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
