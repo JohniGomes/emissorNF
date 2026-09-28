@@ -1,4 +1,4 @@
-import type { Empresa, Cliente, Nota } from "@prisma/client";
+import { Prisma, type Empresa, type Cliente, type Nota } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import { FocusNfeClient, type EmitirNfsePayload } from "@/lib/focusnfe";
@@ -9,6 +9,7 @@ interface EmitirNotaParaEmpresaParams {
   descricaoServico: string;
   valor: number;
   notaRecorrenteId?: string;
+  idempotencyKey?: string;
 }
 
 /**
@@ -22,6 +23,7 @@ export async function emitirNotaParaEmpresa({
   descricaoServico,
   valor,
   notaRecorrenteId,
+  idempotencyKey,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
     throw new Error("Empresa sem token da Focus NFe configurado.");
@@ -35,16 +37,35 @@ export async function emitirNotaParaEmpresa({
     );
   }
 
-  const nota = await prisma.nota.create({
-    data: {
-      empresaId: empresa.id,
-      clienteId: cliente.id,
-      descricaoServico,
-      valor,
-      status: "PROCESSANDO",
-      notaRecorrenteId,
-    },
-  });
+  let nota: Nota;
+  try {
+    nota = await prisma.nota.create({
+      data: {
+        empresaId: empresa.id,
+        clienteId: cliente.id,
+        descricaoServico,
+        valor,
+        status: "PROCESSANDO",
+        notaRecorrenteId,
+        idempotencyKey,
+      },
+    });
+  } catch (err) {
+    // Corrida entre dois cliques quase simultâneos: a constraint única do
+    // banco pegou o que a checagem em memória não pegou a tempo — a nota já
+    // existe, então devolvemos ela em vez de emitir (e cobrar) duas vezes.
+    if (
+      idempotencyKey &&
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002" &&
+      Array.isArray(err.meta?.target) &&
+      err.meta.target.includes("idempotencyKey")
+    ) {
+      const existente = await prisma.nota.findUnique({ where: { idempotencyKey } });
+      if (existente) return existente;
+    }
+    throw err;
+  }
 
   const payload: EmitirNfsePayload = {
     data_emissao: new Date().toISOString(),

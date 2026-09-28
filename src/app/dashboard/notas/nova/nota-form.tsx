@@ -14,11 +14,14 @@ const CLIENTE_MANUAL = "__manual__";
 export function NotaForm({ clientes }: NotaFormProps) {
   const [state, formAction, pending] = useActionState(emitirNota, initialState);
   const [clienteId, setClienteId] = useState("");
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   const clienteManualSelecionado = clienteId === CLIENTE_MANUAL;
 
   return (
     <form action={formAction} className="max-w-lg space-y-4">
+      <input type="hidden" name="idempotencyKey" value={idempotencyKey} />
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Cliente *</label>
         <select

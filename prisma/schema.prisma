@@ -102,6 +102,11 @@ model Nota {
   respostaApi   Json?
   erro          String?
 
+  // Chave gerada no cliente (1 por carregamento do formulário) para evitar
+  // criar duas notas quando o usuário clica duas vezes ou a requisição é
+  // reenviada por instabilidade de rede.
+  idempotencyKey String? @unique
+
   notaRecorrenteId String?
   notaRecorrente   NotaRecorrente? @relation(fields: [notaRecorrenteId], references: [id])
 

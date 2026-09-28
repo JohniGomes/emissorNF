@@ -39,9 +39,22 @@ export async function emitirNota(
   const clienteId = formData.get("clienteId") as string;
   const descricaoServico = formData.get("descricaoServico") as string;
   const valorStr = formData.get("valor") as string;
+  const idempotencyKey = (formData.get("idempotencyKey") as string) || undefined;
 
   if (!clienteId || !descricaoServico || !valorStr) {
     return { error: "Preencha todos os campos." };
+  }
+
+  if (idempotencyKey) {
+    const notaExistente = await prisma.nota.findUnique({
+      where: { idempotencyKey },
+    });
+    if (notaExistente) {
+      // Reenvio do mesmo formulário (duplo clique, retry de rede): a nota já
+      // foi criada na primeira chamada, não criamos uma segunda.
+      revalidatePath("/dashboard/notas");
+      redirect("/dashboard/notas");
+    }
   }
 
   const valor = Number(valorStr.replace(",", "."));
@@ -71,7 +84,7 @@ export async function emitirNota(
     }
   }
 
-  await emitirNotaParaEmpresa({ empresa, cliente, descricaoServico, valor });
+  await emitirNotaParaEmpresa({ empresa, cliente, descricaoServico, valor, idempotencyKey });
 
   revalidatePath("/dashboard/notas");
   redirect("/dashboard/notas");

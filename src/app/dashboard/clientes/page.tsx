@@ -3,7 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function ClientesPage() {
+const POR_PAGINA = 20;
+
+export default async function ClientesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -12,10 +18,20 @@ export default async function ClientesPage() {
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  const clientes = await prisma.cliente.findMany({
-    where: { empresaId: empresa.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+
+  const [clientes, total] = await Promise.all([
+    prisma.cliente.findMany({
+      where: { empresaId: empresa.id },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * POR_PAGINA,
+      take: POR_PAGINA,
+    }),
+    prisma.cliente.count({ where: { empresaId: empresa.id } }),
+  ]);
+
+  const totalPaginas = Math.max(1, Math.ceil(total / POR_PAGINA));
 
   return (
     <div>
@@ -30,34 +46,64 @@ export default async function ClientesPage() {
       </div>
 
       {clientes.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhum cliente cadastrado ainda.</p>
+        <p className="text-sm text-gray-500">
+          {page > 1 ? "Nenhum cliente nesta página." : "Nenhum cliente cadastrado ainda."}
+        </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Nome
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Documento
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  E-mail
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {clientes.map((cliente) => (
-                <tr key={cliente.id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">{cliente.nome}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{cliente.documento}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{cliente.email ?? "—"}</td>
+        <>
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Nome
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Documento
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    E-mail
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {clientes.map((cliente) => (
+                  <tr key={cliente.id}>
+                    <td className="px-4 py-2 text-sm text-gray-900">{cliente.nome}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{cliente.documento}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{cliente.email ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPaginas > 1 && (
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <Link
+                href={`/dashboard/clientes?page=${page - 1}`}
+                aria-disabled={page <= 1}
+                className={`rounded-md border border-gray-300 px-3 py-1.5 ${
+                  page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+                }`}
+              >
+                Anterior
+              </Link>
+              <span>
+                Página {page} de {totalPaginas}
+              </span>
+              <Link
+                href={`/dashboard/clientes?page=${page + 1}`}
+                aria-disabled={page >= totalPaginas}
+                className={`rounded-md border border-gray-300 px-3 py-1.5 ${
+                  page >= totalPaginas ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+                }`}
+              >
+                Próxima
+              </Link>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

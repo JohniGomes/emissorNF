@@ -19,7 +19,13 @@ const statusColor: Record<string, string> = {
   CANCELADA: "bg-gray-100 text-gray-500",
 };
 
-export default async function NotasPage() {
+const POR_PAGINA = 20;
+
+export default async function NotasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -28,11 +34,21 @@ export default async function NotasPage() {
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  const notas = await prisma.nota.findMany({
-    where: { empresaId: empresa.id },
-    include: { cliente: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+
+  const [notas, total] = await Promise.all([
+    prisma.nota.findMany({
+      where: { empresaId: empresa.id },
+      include: { cliente: true },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * POR_PAGINA,
+      take: POR_PAGINA,
+    }),
+    prisma.nota.count({ where: { empresaId: empresa.id } }),
+  ]);
+
+  const totalPaginas = Math.max(1, Math.ceil(total / POR_PAGINA));
 
   return (
     <div>
@@ -47,71 +63,101 @@ export default async function NotasPage() {
       </div>
 
       {notas.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhuma nota emitida ainda.</p>
+        <p className="text-sm text-gray-500">
+          {page > 1 ? "Nenhuma nota nesta página." : "Nenhuma nota emitida ainda."}
+        </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Cliente
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Descrição
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Valor
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Nota
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {notas.map((nota) => (
-                <tr key={nota.id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">{nota.cliente.nome}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">
-                    {nota.descricaoServico}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-500">
-                    {Number(nota.valor).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
-                  <td className="px-4 py-2 text-sm">
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-medium ${statusColor[nota.status]}`}
-                    >
-                      {statusLabel[nota.status]}
-                    </span>
-                    {nota.erro && (
-                      <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
-                    )}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-500">
-                    {nota.linkPdf ? (
-                      <a
-                        href={nota.linkPdf}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-brown hover:underline"
-                      >
-                        Ver PDF
-                      </a>
-                    ) : (
-                      nota.numero || "—"
-                    )}
-                  </td>
+        <>
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Cliente
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Descrição
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Valor
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Nota
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {notas.map((nota) => (
+                  <tr key={nota.id}>
+                    <td className="px-4 py-2 text-sm text-gray-900">{nota.cliente.nome}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">
+                      {nota.descricaoServico}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-500">
+                      {Number(nota.valor).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                    <td className="px-4 py-2 text-sm">
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-medium ${statusColor[nota.status]}`}
+                      >
+                        {statusLabel[nota.status]}
+                      </span>
+                      {nota.erro && (
+                        <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-500">
+                      {nota.linkPdf ? (
+                        <a
+                          href={nota.linkPdf}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-brown hover:underline"
+                        >
+                          Ver PDF
+                        </a>
+                      ) : (
+                        nota.numero || "—"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPaginas > 1 && (
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <Link
+                href={`/dashboard/notas?page=${page - 1}`}
+                aria-disabled={page <= 1}
+                className={`rounded-md border border-gray-300 px-3 py-1.5 ${
+                  page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+                }`}
+              >
+                Anterior
+              </Link>
+              <span>
+                Página {page} de {totalPaginas}
+              </span>
+              <Link
+                href={`/dashboard/notas?page=${page + 1}`}
+                aria-disabled={page >= totalPaginas}
+                className={`rounded-md border border-gray-300 px-3 py-1.5 ${
+                  page >= totalPaginas ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
+                }`}
+              >
+                Próxima
+              </Link>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
