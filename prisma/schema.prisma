@@ -57,6 +57,7 @@ model Empresa {
   notas            Nota[]
   notasRecorrentes NotaRecorrente[]
   servicos         Servico[]
+  logs             LogAuditoria[]
 
   @@index([userId])
 }
@@ -161,4 +162,25 @@ model Servico {
   createdAt DateTime @default(now())
 
   @@index([empresaId])
+}
+
+/**
+ * Trilha de auditoria enxuta: eventos relevantes de segurança/negócio
+ * (login, emissão, alteração/exclusão de cliente, cancelamento etc), sem
+ * secrets nem dados sensíveis nos detalhes — só o necessário para investigar
+ * "quem fez o quê e quando".
+ */
+model LogAuditoria {
+  id         String   @id @default(cuid())
+  empresaId  String?
+  empresa    Empresa? @relation(fields: [empresaId], references: [id])
+  userId     String?
+  acao       String
+  entidadeId String?
+  detalhes   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([empresaId])
+  @@index([acao])
+  @@index([createdAt])
 }

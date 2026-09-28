@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { registrarLog } from "@/lib/auditoria";
 
 export interface ClienteState {
   error?: string;
@@ -35,7 +36,7 @@ export async function criarCliente(
     return { error: "Preencha nome e documento (CPF/CNPJ)." };
   }
 
-  await prisma.cliente.create({
+  const cliente = await prisma.cliente.create({
     data: {
       empresaId: empresa.id,
       nome,
@@ -48,6 +49,13 @@ export async function criarCliente(
       uf,
       cep,
     },
+  });
+
+  await registrarLog({
+    empresaId: empresa.id,
+    userId: session.user.id,
+    acao: "cliente.criar",
+    entidadeId: cliente.id,
   });
 
   revalidatePath("/dashboard/clientes");
@@ -63,7 +71,7 @@ async function getEmpresaDoUsuario() {
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  return empresa;
+  return { empresa, userId: session.user.id };
 }
 
 export async function atualizarCliente(
@@ -71,7 +79,7 @@ export async function atualizarCliente(
   _prevState: ClienteState,
   formData: FormData,
 ): Promise<ClienteState> {
-  const empresa = await getEmpresaDoUsuario();
+  const { empresa, userId } = await getEmpresaDoUsuario();
 
   // Reconfirma que o cliente pertence a esta empresa antes de alterar —
   // nunca confiamos apenas no id vindo do formulário.
@@ -101,6 +109,13 @@ export async function atualizarCliente(
     data: { nome, documento, email, logradouro, numero, bairro, municipio, uf, cep },
   });
 
+  await registrarLog({
+    empresaId: empresa.id,
+    userId,
+    acao: "cliente.editar",
+    entidadeId: clienteId,
+  });
+
   revalidatePath("/dashboard/clientes");
   redirect("/dashboard/clientes");
 }
@@ -113,7 +128,7 @@ export async function excluirCliente(
   _prevState: ExcluirClienteState,
   formData: FormData,
 ): Promise<ExcluirClienteState> {
-  const empresa = await getEmpresaDoUsuario();
+  const { empresa, userId } = await getEmpresaDoUsuario();
   const clienteId = formData.get("clienteId") as string;
 
   const cliente = await prisma.cliente.findFirst({
@@ -131,6 +146,13 @@ export async function excluirCliente(
   }
 
   await prisma.cliente.delete({ where: { id: clienteId } });
+
+  await registrarLog({
+    empresaId: empresa.id,
+    userId,
+    acao: "cliente.excluir",
+    entidadeId: clienteId,
+  });
 
   revalidatePath("/dashboard/clientes");
   return {};

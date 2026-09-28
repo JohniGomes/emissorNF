@@ -2,6 +2,7 @@ import { Prisma, type Empresa, type Cliente, type Nota } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/crypto";
 import { FocusNfeClient, type EmitirNfsePayload } from "@/lib/focusnfe";
+import { registrarLog } from "@/lib/auditoria";
 
 interface EmitirNotaParaEmpresaParams {
   empresa: Empresa;
@@ -106,7 +107,7 @@ export async function emitirNotaParaEmpresa({
         ? "ERRO"
         : "PROCESSANDO";
 
-    return await prisma.nota.update({
+    const notaAtualizada = await prisma.nota.update({
       where: { id: nota.id },
       data: {
         status: statusFinal,
@@ -117,13 +118,31 @@ export async function emitirNotaParaEmpresa({
         erro: resposta.erros?.map((e) => e.mensagem).join("; "),
       },
     });
+
+    await registrarLog({
+      empresaId: empresa.id,
+      acao: statusFinal === "ERRO" ? "nota.emitir.erro" : "nota.emitir.sucesso",
+      entidadeId: nota.id,
+      detalhes: { valor, clienteId: cliente.id },
+    });
+
+    return notaAtualizada;
   } catch (err) {
-    return await prisma.nota.update({
+    const notaComErro = await prisma.nota.update({
       where: { id: nota.id },
       data: {
         status: "ERRO",
         erro: err instanceof Error ? err.message : "Erro desconhecido ao emitir nota.",
       },
     });
+
+    await registrarLog({
+      empresaId: empresa.id,
+      acao: "nota.emitir.erro",
+      entidadeId: nota.id,
+      detalhes: { valor, clienteId: cliente.id },
+    });
+
+    return notaComErro;
   }
 }

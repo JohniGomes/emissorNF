@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { authConfig } from "@/lib/auth.config";
+import { registrarLog } from "@/lib/auditoria";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -23,6 +24,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const senhaValida = await bcrypt.compare(password, user.password);
         if (!senhaValida) return null;
+
+        await registrarLog({ userId: user.id, acao: "auth.login" });
 
         return { id: user.id, email: user.email, name: user.name };
       },
