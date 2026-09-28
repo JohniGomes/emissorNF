@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { escolherPlano } from "./actions";
 import type { Plano } from "@/lib/planos";
@@ -11,6 +11,8 @@ function formatarPreco(valor: number) {
 
 export function PlanoSelector({ planos }: { planos: Plano[] }) {
   const [ciclo, setCiclo] = useState<"mensal" | "anual">("mensal");
+  const [pending, startTransition] = useTransition();
+  const [planoEmEnvio, setPlanoEmEnvio] = useState<string | null>(null);
 
   const referencia = planos[0];
   const economiaPercentual = referencia
@@ -76,14 +78,23 @@ export function PlanoSelector({ planos }: { planos: Plano[] }) {
               ))}
             </ul>
 
-            <form action={escolherPlano} className="mt-6">
+            <form
+              action={(formData) => {
+                setPlanoEmEnvio(plano.id);
+                startTransition(() => {
+                  escolherPlano(formData);
+                });
+              }}
+              className="mt-6"
+            >
               <input type="hidden" name="planoId" value={plano.id} />
               <input type="hidden" name="cicloCobranca" value={ciclo} />
               <button
                 type="submit"
-                className="w-full rounded-full btn-gradient px-4 py-2 text-sm font-medium text-white"
+                disabled={pending}
+                className="w-full rounded-full btn-gradient px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
               >
-                Assinar
+                {pending && planoEmEnvio === plano.id ? "Processando..." : "Assinar"}
               </button>
             </form>
           </div>
