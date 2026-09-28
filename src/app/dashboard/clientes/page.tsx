@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { ExcluirClienteButton } from "./excluir-cliente-button";
 
 const POR_PAGINA = 20;
 
@@ -27,6 +28,7 @@ export default async function ClientesPage({
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * POR_PAGINA,
       take: POR_PAGINA,
+      include: { _count: { select: { notas: true } } },
     }),
     prisma.cliente.count({ where: { empresaId: empresa.id } }),
   ]);
@@ -64,6 +66,12 @@ export default async function ClientesPage({
                   <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                     E-mail
                   </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Notas
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -72,6 +80,16 @@ export default async function ClientesPage({
                     <td className="px-4 py-2 text-sm text-gray-900">{cliente.nome}</td>
                     <td className="px-4 py-2 text-sm text-gray-500">{cliente.documento}</td>
                     <td className="px-4 py-2 text-sm text-gray-500">{cliente.email ?? "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{cliente._count.notas}</td>
+                    <td className="px-4 py-2 text-sm space-x-3">
+                      <Link
+                        href={`/dashboard/clientes/${cliente.id}/editar`}
+                        className="text-brand-brown hover:underline"
+                      >
+                        Editar
+                      </Link>
+                      <ExcluirClienteButton clienteId={cliente.id} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
