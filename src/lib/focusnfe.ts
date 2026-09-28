@@ -26,6 +26,7 @@ export interface EmitirNfsePayload {
   prestador: {
     cnpj: string;
     inscricao_municipal?: string;
+    codigo_municipio: string;
   };
   tomador: {
     cnpj_cpf: string;

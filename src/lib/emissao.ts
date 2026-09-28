@@ -73,6 +73,7 @@ export async function emitirNotaParaEmpresa({
     prestador: {
       cnpj: empresa.cnpj,
       inscricao_municipal: empresa.inscricaoMunicipal ?? undefined,
+      codigo_municipio: empresa.municipioCodigoIbge,
     },
     tomador: {
       cnpj_cpf: cliente.documento,
