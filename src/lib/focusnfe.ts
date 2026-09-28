@@ -173,7 +173,7 @@ export class FocusNfeClient {
       body: JSON.stringify(payload),
     });
 
-    return response.json();
+    return normalizeFocusResponse(response, await response.json());
   }
 
   async consultarNfse(referencia: string): Promise<FocusNfeResponse> {
@@ -184,7 +184,7 @@ export class FocusNfeClient {
       },
     });
 
-    return response.json();
+    return normalizeFocusResponse(response, await response.json());
   }
 
   async cancelarNfse(
@@ -203,6 +203,34 @@ export class FocusNfeClient {
       },
     );
 
-    return response.json();
+    return normalizeFocusResponse(response, await response.json());
   }
+}
+
+/**
+ * A Focus NFe retorna corpo JSON tanto em respostas de sucesso quanto de erro
+ * (4xx/5xx), então um `fetch` sem checar `response.ok` trata erro HTTP como
+ * se fosse sucesso. Aqui normalizamos: em falha HTTP, garantimos que `erros`
+ * sempre venha preenchido (mesmo que a Focus não tenha mandado nesse formato),
+ * para que a camada de emissão sempre saiba diferenciar sucesso de erro.
+ */
+function normalizeFocusResponse(
+  response: Response,
+  data: FocusNfeResponse,
+): FocusNfeResponse {
+  if (!response.ok && (!data.erros || data.erros.length === 0)) {
+    return {
+      ...data,
+      erros: [
+        {
+          codigo: String(response.status),
+          mensagem:
+            (data.mensagem as string | undefined) ||
+            "Erro na comunicação com o provedor fiscal.",
+        },
+      ],
+    };
+  }
+
+  return data;
 }
