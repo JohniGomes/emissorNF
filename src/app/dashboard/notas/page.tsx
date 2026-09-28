@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import type { Prisma } from "@prisma/client";
 
 const statusLabel: Record<string, string> = {
   PENDENTE: "Pendente",
@@ -21,10 +22,18 @@ const statusColor: Record<string, string> = {
 
 const POR_PAGINA = 20;
 
+interface NotasSearchParams {
+  page?: string;
+  cliente?: string;
+  status?: string;
+  de?: string;
+  ate?: string;
+}
+
 export default async function NotasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<NotasSearchParams>;
 }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
@@ -34,21 +43,48 @@ export default async function NotasPage({
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, cliente, status, de, ate } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
+
+  const where: Prisma.NotaWhereInput = { empresaId: empresa.id };
+
+  if (cliente) {
+    where.cliente = { nome: { contains: cliente, mode: "insensitive" } };
+  }
+  if (status) {
+    where.status = status as Prisma.NotaWhereInput["status"];
+  }
+  if (de || ate) {
+    where.createdAt = {
+      ...(de ? { gte: new Date(`${de}T00:00:00`) } : {}),
+      ...(ate ? { lte: new Date(`${ate}T23:59:59`) } : {}),
+    };
+  }
 
   const [notas, total] = await Promise.all([
     prisma.nota.findMany({
-      where: { empresaId: empresa.id },
+      where,
       include: { cliente: true },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * POR_PAGINA,
       take: POR_PAGINA,
     }),
-    prisma.nota.count({ where: { empresaId: empresa.id } }),
+    prisma.nota.count({ where }),
   ]);
 
   const totalPaginas = Math.max(1, Math.ceil(total / POR_PAGINA));
+
+  const filtroAtivo = Boolean(cliente || status || de || ate);
+
+  function paginaHref(novaPagina: number) {
+    const params = new URLSearchParams();
+    if (cliente) params.set("cliente", cliente);
+    if (status) params.set("status", status);
+    if (de) params.set("de", de);
+    if (ate) params.set("ate", ate);
+    params.set("page", String(novaPagina));
+    return `/dashboard/notas?${params.toString()}`;
+  }
 
   return (
     <div>
@@ -62,9 +98,78 @@ export default async function NotasPage({
         </Link>
       </div>
 
+      <form
+        method="get"
+        className="mb-4 grid grid-cols-2 gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:grid-cols-4"
+      >
+        <div className="col-span-2 sm:col-span-1">
+          <label className="block text-xs font-medium text-gray-700">Cliente</label>
+          <input
+            type="text"
+            name="cliente"
+            defaultValue={cliente ?? ""}
+            placeholder="Buscar por nome"
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700">Status</label>
+          <select
+            name="status"
+            defaultValue={status ?? ""}
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          >
+            <option value="">Todos</option>
+            {Object.entries(statusLabel).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700">De</label>
+          <input
+            type="date"
+            name="de"
+            defaultValue={de ?? ""}
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700">Até</label>
+          <input
+            type="date"
+            name="ate"
+            defaultValue={ate ?? ""}
+            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+          />
+        </div>
+        <div className="col-span-2 flex items-end gap-2 sm:col-span-4">
+          <button
+            type="submit"
+            className="rounded-md btn-gradient px-4 py-1.5 text-sm font-medium text-white"
+          >
+            Filtrar
+          </button>
+          {filtroAtivo && (
+            <Link
+              href="/dashboard/notas"
+              className="rounded-md border border-gray-300 px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Limpar filtros
+            </Link>
+          )}
+        </div>
+      </form>
+
       {notas.length === 0 ? (
         <p className="text-sm text-gray-500">
-          {page > 1 ? "Nenhuma nota nesta página." : "Nenhuma nota emitida ainda."}
+          {filtroAtivo
+            ? "Nenhuma nota encontrada com esses filtros."
+            : page > 1
+              ? "Nenhuma nota nesta página."
+              : "Nenhuma nota emitida ainda."}
         </p>
       ) : (
         <>
@@ -135,7 +240,7 @@ export default async function NotasPage({
           {totalPaginas > 1 && (
             <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
               <Link
-                href={`/dashboard/notas?page=${page - 1}`}
+                href={paginaHref(page - 1)}
                 aria-disabled={page <= 1}
                 className={`rounded-md border border-gray-300 px-3 py-1.5 ${
                   page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
@@ -147,7 +252,7 @@ export default async function NotasPage({
                 Página {page} de {totalPaginas}
               </span>
               <Link
-                href={`/dashboard/notas?page=${page + 1}`}
+                href={paginaHref(page + 1)}
                 aria-disabled={page >= totalPaginas}
                 className={`rounded-md border border-gray-300 px-3 py-1.5 ${
                   page >= totalPaginas ? "pointer-events-none opacity-40" : "hover:bg-gray-50"
