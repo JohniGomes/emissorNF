@@ -87,8 +87,12 @@ export async function emitirNota(
   }
 
   const clienteId = formData.get("clienteId") as string;
+  const servicoId = (formData.get("servicoId") as string) || undefined;
   const descricaoServico = formData.get("descricaoServico") as string;
   const valorStr = formData.get("valor") as string;
+  const descontoStr = (formData.get("desconto") as string) || "";
+  const dataCompetenciaStr = (formData.get("dataCompetencia") as string) || "";
+  const observacoes = (formData.get("observacoes") as string)?.trim() || undefined;
   const idempotencyKey = (formData.get("idempotencyKey") as string) || undefined;
   const codigoTributacaoNacionalIss =
     (formData.get("codigoTributacaoNacionalIss") as string) || undefined;
@@ -116,6 +120,34 @@ export async function emitirNota(
   const valor = Number(valorStr.replace(",", "."));
   if (Number.isNaN(valor) || valor <= 0) {
     return { error: "Informe um valor válido." };
+  }
+
+  let desconto: number | undefined;
+  if (descontoStr.trim()) {
+    desconto = Number(descontoStr.replace(",", "."));
+    if (Number.isNaN(desconto) || desconto < 0) {
+      return { error: "Informe um desconto válido." };
+    }
+    if (desconto >= valor) {
+      return { error: "O desconto não pode ser maior ou igual ao valor do serviço." };
+    }
+  }
+
+  let dataCompetencia: Date | undefined;
+  if (dataCompetenciaStr) {
+    dataCompetencia = new Date(`${dataCompetenciaStr}T00:00:00`);
+    if (Number.isNaN(dataCompetencia.getTime())) {
+      return { error: "Informe uma data de competência válida." };
+    }
+  }
+
+  if (servicoId) {
+    const servico = await prisma.servico.findFirst({
+      where: { id: servicoId, empresaId: empresa.id },
+    });
+    if (!servico) {
+      return { error: "Serviço inválido." };
+    }
   }
 
   let cliente;
@@ -147,6 +179,10 @@ export async function emitirNota(
     valor,
     idempotencyKey,
     codigoTributacaoNacionalIss,
+    servicoId,
+    desconto,
+    dataCompetencia,
+    observacoes,
   });
 
   revalidatePath("/dashboard/notas");

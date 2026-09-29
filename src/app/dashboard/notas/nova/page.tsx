@@ -22,6 +22,12 @@ export default async function NovaNotaPage({
     select: { id: true, nome: true, documento: true },
   });
 
+  const servicos = await prisma.servico.findMany({
+    where: { empresaId: empresa.id, ativo: true },
+    orderBy: { nome: "asc" },
+    select: { id: true, nome: true, descricao: true, valor: true },
+  });
+
   const { clienteId, descricao, valor } = await searchParams;
   // "Emitir novamente" preenche a partir de uma nota anterior — só se o
   // cliente ainda existir na carteira da empresa (nunca confiamos no id vindo
@@ -34,7 +40,9 @@ export default async function NovaNotaPage({
       <h1 className="mb-6 text-xl font-semibold text-gray-900">Emitir nota</h1>
       <NotaForm
         clientes={clientes}
+        servicos={servicos.map((s) => ({ ...s, valor: Number(s.valor) }))}
         ehMei={empresa.regimeTributario === "MEI"}
+        nomeEmpresa={empresa.razaoSocial}
         defaultValues={{
           clienteId: clienteValido,
           descricaoServico: descricao,

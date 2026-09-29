@@ -18,6 +18,10 @@ interface EmitirNotaParaEmpresaParams {
   idempotencyKey?: string;
   // Obrigatório apenas para empresas MEI (NFS-e Nacional).
   codigoTributacaoNacionalIss?: string;
+  servicoId?: string;
+  desconto?: number;
+  dataCompetencia?: Date;
+  observacoes?: string;
 }
 
 /**
@@ -33,6 +37,10 @@ export async function emitirNotaParaEmpresa({
   notaRecorrenteId,
   idempotencyKey,
   codigoTributacaoNacionalIss,
+  servicoId,
+  desconto,
+  dataCompetencia,
+  observacoes,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
     throw new Error("Empresa sem token da Focus NFe configurado.");
@@ -53,14 +61,30 @@ export async function emitirNotaParaEmpresa({
     }
   }
 
+  const valorLiquido = valor - (desconto ?? 0);
+  if (valorLiquido <= 0) {
+    throw new Error("O desconto não pode ser maior ou igual ao valor do serviço.");
+  }
+
+  // Observações do usuário viajam junto na descrição enviada à Focus (não
+  // existe um campo fiscal separado pra isso na NFS-e clássica nem na DPS),
+  // mas ficam registradas à parte na Nota para referência.
+  const discriminacaoParaFocus = observacoes
+    ? `${descricaoServico}\n\nObservações: ${observacoes}`
+    : descricaoServico;
+
   let nota: Nota;
   try {
     nota = await prisma.nota.create({
       data: {
         empresaId: empresa.id,
         clienteId: cliente.id,
+        servicoId,
         descricaoServico,
         valor,
+        desconto,
+        dataCompetencia: dataCompetencia ?? new Date(),
+        observacoes,
         status: "PROCESSANDO",
         notaRecorrenteId,
         idempotencyKey,
@@ -93,13 +117,14 @@ export async function emitirNotaParaEmpresa({
 
     const resposta = ehMei
       ? await emitirViaNfseNacional(client, empresa, cliente, nota.id, {
-          descricaoServico,
-          valor,
+          descricaoServico: discriminacaoParaFocus,
+          valor: valorLiquido,
           codigoTributacaoNacionalIss: codigoTributacaoNacionalIss!,
+          dataCompetencia: nota.dataCompetencia ?? new Date(),
         })
       : await client.emitirNfse(nota.id, montarPayloadNfseClassica(empresa, cliente, {
-          descricaoServico,
-          valor,
+          descricaoServico: discriminacaoParaFocus,
+          valor: valorLiquido,
         }));
 
     const statusFinal =
@@ -193,7 +218,12 @@ async function emitirViaNfseNacional(
   empresa: Empresa,
   cliente: Cliente,
   notaId: string,
-  dados: { descricaoServico: string; valor: number; codigoTributacaoNacionalIss: string },
+  dados: {
+    descricaoServico: string;
+    valor: number;
+    codigoTributacaoNacionalIss: string;
+    dataCompetencia: Date;
+  },
 ) {
   const empresaAtualizada = await prisma.empresa.update({
     where: { id: empresa.id },
@@ -206,7 +236,7 @@ async function emitirViaNfseNacional(
 
   const payload: EmitirDpsNacionalPayload = {
     data_emissao: new Date().toISOString(),
-    data_competencia: new Date().toISOString().slice(0, 10),
+    data_competencia: dados.dataCompetencia.toISOString().slice(0, 10),
     serie_dps: 1,
     numero_dps: numeroDps,
     emitente_dps: "1",

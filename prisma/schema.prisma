@@ -92,15 +92,25 @@ model Cliente {
   empresaId String
   empresa   Empresa  @relation(fields: [empresaId], references: [id])
 
-  nome       String
-  documento  String // CNPJ ou CPF
-  email      String?
-  logradouro String?
-  numero     String?
-  bairro     String?
-  municipio  String?
-  uf         String?
-  cep        String?
+  nome         String
+  nomeFantasia String?
+  documento    String // CNPJ ou CPF — o tipo de pessoa é inferido do tamanho (11=PF, 14=PJ)
+  email        String?
+  telefone     String?
+  whatsapp     String?
+  logradouro   String?
+  numero       String?
+  complemento  String?
+  bairro       String?
+  municipio    String?
+  municipioCodigoIbge String?
+  uf           String?
+  cep          String?
+
+  // Só relevantes em municípios/regimes específicos — ficam numa seção
+  // "avançada" na tela, nunca obrigatórios por padrão.
+  inscricaoMunicipal String?
+  inscricaoEstadual  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -118,8 +128,17 @@ model Nota {
   clienteId String
   cliente   Cliente  @relation(fields: [clienteId], references: [id])
 
+  servicoId String?
+  servico   Servico? @relation(fields: [servicoId], references: [id])
+
   descricaoServico String
   valor            Decimal @db.Decimal(12, 2)
+  desconto         Decimal? @db.Decimal(12, 2)
+
+  // Data da prestação do serviço, separada da data de emissão (que o backend
+  // já trata conforme a lógica fiscal existente). Default = hoje, editável.
+  dataCompetencia DateTime?
+  observacoes     String?
 
   // Só preenchido para emissão via NFS-e Nacional (empresas MEI) — código de
   // tributação nacional do ISS referente ao serviço prestado.
@@ -164,10 +183,18 @@ model NotaRecorrente {
   clienteId String
   cliente   Cliente  @relation(fields: [clienteId], references: [id])
 
+  servicoId String?
+  servico   Servico? @relation(fields: [servicoId], references: [id])
+
   descricaoServico String
   valor            Decimal @db.Decimal(12, 2)
   diaDoMes         Int // dia do mês em que a nota deve ser emitida
   ativo            Boolean @default(true)
+
+  // Preparado para expansão futura (trimestral/semestral/anual) — hoje só
+  // MENSAL é de fato executado pelo cron.
+  periodicidade    String    @default("MENSAL")
+  primeiraEmissao  DateTime?
 
   // null = sem prazo definido, roda até ser desativada manualmente. Quando
   // definido, decrementa a cada emissão bem-sucedida e desativa sozinha ao
@@ -193,10 +220,16 @@ model Servico {
   empresaId String
   empresa   Empresa  @relation(fields: [empresaId], references: [id])
 
+  nome      String  @default("")
   descricao String
   valor     Decimal @db.Decimal(12, 2)
+  ativo     Boolean @default(true)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  notas            Nota[]
+  notasRecorrentes NotaRecorrente[]
 
   @@index([empresaId])
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FilePlus2, FileText, Users, Repeat, Gift } from "lucide-react";
+import { LayoutDashboard, FilePlus2, FileText, Users, Repeat, Briefcase, Gift } from "lucide-react";
 import { LogoMark } from "./logo-mark";
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { href: "/dashboard/notas", label: "NFs emitidas", icon: FileText },
   { href: "/dashboard/recorrentes", label: "Recorrentes", icon: Repeat },
   { href: "/dashboard/clientes", label: "Clientes", icon: Users },
+  { href: "/dashboard/servicos", label: "Serviços", icon: Briefcase },
   { href: "/dashboard/indique", label: "Indique e ganhe", icon: Gift },
 ];
 
