@@ -1,15 +1,21 @@
 /**
- * Traduz o texto bruto que a Focus NFe devolve em erros (em geral inglês
- * técnico de API ou jargão fiscal) para algo que o usuário do Notarium
- * entenda, com uma dica de como resolver quando dá pra saber a causa.
- * Nunca inventa causa fiscal - quando não reconhece o padrão, mostra a
- * mensagem original da Focus prefixada, sem fingir que sabe o motivo.
+ * Traduz o texto bruto que o provedor fiscal devolve em erros (em geral
+ * jargão técnico de API) para algo que o usuário do Notarium entenda, com
+ * uma dica de como resolver quando dá pra saber a causa. Nunca inventa causa
+ * fiscal, e nunca expõe o nome do provedor, hosts ou jargão técnico de API
+ * ao usuário final; quando não reconhece o padrão, mostra uma mensagem
+ * genérica e honesta em vez de repetir o texto bruto.
  */
 
 interface ErroNormalizado {
   mensagem: string;
   dica?: string;
 }
+
+const MENSAGEM_GENERICA: ErroNormalizado = {
+  mensagem: "Não foi possível emitir a nota agora.",
+  dica: "Tente novamente em alguns minutos; se o problema continuar, fale com o suporte.",
+};
 
 const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNormalizado }> = [
   {
@@ -36,8 +42,8 @@ const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNorm
   {
     regex: /nota fiscal não encontrada|nao encontrada/i,
     normalizar: () => ({
-      mensagem: "Essa nota não foi localizada no provedor fiscal.",
-      dica: "Pode já ter expirado no ambiente de testes (homologação) ou ter sido processada com outro identificador.",
+      mensagem: "Essa nota não foi localizada.",
+      dica: "Pode já ter expirado no ambiente de testes ou ter sido processada com outro identificador.",
     }),
   },
   {
@@ -55,9 +61,9 @@ const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNorm
     }),
   },
   {
-    regex: /access token/i,
+    regex: /access token|permissao_negada|host\s*:/i,
     normalizar: () => ({
-      mensagem: "O acesso ao provedor fiscal da sua empresa não foi reconhecido.",
+      mensagem: "O acesso fiscal da sua empresa não foi reconhecido.",
       dica: 'Vá em "Sua empresa" e confirme se o cadastro fiscal está completo; se o problema continuar, fale com o suporte.',
     }),
   },
@@ -70,11 +76,33 @@ export function normalizarErroFiscal(mensagemOriginal: string): ErroNormalizado 
     }
   }
 
-  return { mensagem: mensagemOriginal };
+  // Não reconhecemos o padrão: melhor uma mensagem genérica e honesta do que
+  // repetir texto técnico bruto que pode citar o provedor, hosts ou jargão de API.
+  return MENSAGEM_GENERICA;
 }
 
 /** Formata pra guardar em Nota.erro: mensagem amigável + dica entre parênteses. */
 export function formatarErroParaNota(mensagemOriginal: string): string {
   const { mensagem, dica } = normalizarErroFiscal(mensagemOriginal);
   return dica ? `${mensagem} (${dica})` : mensagem;
+}
+
+const PADRAO_PROVEDOR = /focus\s*-?\s*nfe|[\w.-]*focusnfe\.com\.br/gi;
+const PADRAO_HOST = /\(?\s*host\s*:\s*[^)]*\)?/gi;
+
+/**
+ * Sanitiza uma mensagem de erro já salva (possivelmente de antes desta
+ * blindagem existir) na hora de exibir - garante que nada citando o
+ * provedor fiscal ou jargão técnico de API chegue à tela do usuário, mesmo
+ * para notas antigas.
+ */
+export function sanitizarMensagemExibicao(mensagem: string): string {
+  const semHost = mensagem.replace(PADRAO_HOST, "").replace(PADRAO_PROVEDOR, "provedor fiscal");
+  const limpo = semHost.replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").trim();
+
+  if (!limpo || /access token|permissao_negada|provedor fiscal$/i.test(limpo)) {
+    return `${MENSAGEM_GENERICA.mensagem} (${MENSAGEM_GENERICA.dica})`;
+  }
+
+  return limpo;
 }

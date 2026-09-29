@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { emitirNotaParaEmpresa, cancelarNotaParaEmpresa } from "@/lib/emissao";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 export interface NotaState {
   error?: string;
@@ -49,7 +50,7 @@ export async function cancelarNota(
     return {
       error:
         err instanceof Error
-          ? `Não foi possível cancelar a nota: ${err.message}`
+          ? `Não foi possível cancelar a nota: ${sanitizarMensagemExibicao(err.message)}`
           : "Não foi possível cancelar a nota.",
     };
   }
@@ -73,7 +74,7 @@ export async function emitirNota(
   if (!empresa.focusNfeTokenEncrypted) {
     return {
       error:
-        "Configure o token da Focus NFe na página da Empresa antes de emitir notas.",
+        "Complete a configuração fiscal da empresa na página Empresa antes de emitir notas.",
     };
   }
 

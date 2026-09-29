@@ -10,6 +10,7 @@ import {
 } from "@/lib/empresa";
 import { atualizarCertificadoFocusNfe } from "@/lib/focusnfe";
 import { registrarLog } from "@/lib/auditoria";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -61,7 +62,7 @@ export async function salvarEmpresa(
     return {
       error:
         err instanceof Error
-          ? `Não foi possível salvar a empresa: ${err.message}`
+          ? `Não foi possível salvar a empresa: ${sanitizarMensagemExibicao(err.message)}`
           : "Não foi possível salvar a empresa. Tente novamente.",
     };
   }
@@ -91,7 +92,7 @@ export async function enviarCertificadoDigital(
   if (!empresa.focusNfeEmpresaId) {
     return {
       error:
-        "Essa empresa foi cadastrada antes desse recurso existir e ainda não tem um id na Focus NFe. Fale com o suporte.",
+        "Essa empresa foi cadastrada antes desse recurso existir e ainda não tem um cadastro fiscal completo. Fale com o suporte.",
     };
   }
 
@@ -133,7 +134,7 @@ export async function enviarCertificadoDigital(
     return {
       error:
         err instanceof Error
-          ? `Não foi possível enviar o certificado: ${err.message}`
+          ? `Não foi possível enviar o certificado: ${sanitizarMensagemExibicao(err.message)}`
           : "Não foi possível enviar o certificado.",
     };
   }

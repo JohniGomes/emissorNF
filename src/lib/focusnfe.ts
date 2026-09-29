@@ -150,7 +150,7 @@ export async function criarEmpresaFocusNfe(
     const mensagem =
       data?.erros?.map((e: { mensagem: string }) => e.mensagem).join("; ") ||
       data?.mensagem ||
-      "Erro ao cadastrar empresa na Focus NFe.";
+      "Erro ao cadastrar empresa no provedor fiscal.";
     throw new Error(mensagem);
   }
 
@@ -187,7 +187,7 @@ export async function atualizarCertificadoFocusNfe(
     const mensagem =
       data?.erros?.map((e: { mensagem: string }) => e.mensagem).join("; ") ||
       data?.mensagem ||
-      "Erro ao enviar o certificado digital para a Focus NFe.";
+      "Erro ao enviar o certificado digital ao provedor fiscal.";
     throw new Error(mensagem);
   }
 }

@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/crypto";
 import { criarEmpresaFocusNfe } from "@/lib/focusnfe";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 function ehCnpjDuplicado(err: unknown): boolean {
   return (
@@ -152,7 +153,7 @@ export async function salvarDadosEmpresa(
         empresaId: novaEmpresa.id,
         error:
           err instanceof Error
-            ? `Empresa salva, mas houve um problema ao configurar a emissão de notas: ${err.message}`
+            ? `Empresa salva, mas houve um problema ao configurar a emissão de notas: ${sanitizarMensagemExibicao(err.message)}`
             : "Empresa salva, mas houve um problema ao configurar a emissão de notas.",
       };
     }

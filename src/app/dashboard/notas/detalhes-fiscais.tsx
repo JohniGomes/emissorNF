@@ -41,9 +41,12 @@ export function DetalhesFiscais({ respostaApi }: DetalhesFiscaisProps) {
 
   if (!respostaApi || typeof respostaApi !== "object") return null;
 
-  const pares = achatar(respostaApi as Record<string, unknown>).filter(
-    ([chave]) => !CAMPOS_OCULTOS.has(chave.split(".").pop() ?? chave),
-  );
+  const pares = achatar(respostaApi as Record<string, unknown>).filter(([chave, valor]) => {
+    if (CAMPOS_OCULTOS.has(chave.split(".").pop() ?? chave)) return false;
+    // Nunca expõe nada que cite o provedor fiscal ou jargão técnico de API.
+    if (/focus/i.test(chave) || /focus|host\s*:/i.test(valor)) return false;
+    return true;
+  });
 
   if (pares.length === 0) return null;
 

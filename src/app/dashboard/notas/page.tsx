@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { CancelarNotaButton } from "./cancelar-nota-button";
 import { DetalhesFiscais } from "./detalhes-fiscais";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 const statusLabel: Record<string, string> = {
   PENDENTE: "Pendente",
@@ -226,9 +227,13 @@ export default async function NotasPage({
                           {statusLabel[nota.status]}
                         </span>
                         {nota.erro && (
-                          <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
+                          <p className="mt-1 text-xs text-red-600">
+                            {sanitizarMensagemExibicao(nota.erro)}
+                          </p>
                         )}
-                        <DetalhesFiscais respostaApi={nota.respostaApi} />
+                        {nota.status === "AUTORIZADA" && (
+                          <DetalhesFiscais respostaApi={nota.respostaApi} />
+                        )}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-500">
                         {nota.linkPdf ? (

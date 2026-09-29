@@ -8,6 +8,7 @@ import {
   salvarDadosEmpresa,
 } from "@/lib/empresa";
 import { redirect } from "next/navigation";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 export interface EmpresaOnboardingState {
   error?: string;
@@ -56,7 +57,7 @@ export async function salvarEmpresaOnboarding(
     return {
       error:
         err instanceof Error
-          ? `Não foi possível salvar a empresa: ${err.message}`
+          ? `Não foi possível salvar a empresa: ${sanitizarMensagemExibicao(err.message)}`
           : "Não foi possível salvar a empresa. Tente novamente.",
     };
   }

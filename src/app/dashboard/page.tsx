@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Users, FileText, Plus, AlertTriangle, TrendingUp } from "lucide-react";
+import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 interface FaturamentoMensal {
   mes: Date;
@@ -65,7 +66,9 @@ export default async function DashboardPage() {
     ...notasComErro.map((nota) => ({
       id: nota.id,
       titulo: `Nota rejeitada: ${nota.descricaoServico}`,
-      descricao: nota.erro || "A emissão retornou um erro. Revise os dados e tente novamente.",
+      descricao: nota.erro
+        ? sanitizarMensagemExibicao(nota.erro)
+        : "A emissão retornou um erro. Revise os dados e tente novamente.",
       href: "/dashboard/notas",
     })),
   ];

@@ -48,7 +48,7 @@ export async function emitirNotaParaEmpresa({
   codigoNbs,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
-    throw new Error("Empresa sem token da Focus NFe configurado.");
+    throw new Error("Empresa sem certificado digital ou cadastro fiscal configurado.");
   }
 
   const ehMei = empresa.regimeTributario === "MEI";
@@ -282,7 +282,7 @@ export async function cancelarNotaParaEmpresa(
   justificativa: string,
 ): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
-    throw new Error("Empresa sem token da Focus NFe configurado.");
+    throw new Error("Empresa sem certificado digital ou cadastro fiscal configurado.");
   }
 
   const token = decrypt(empresa.focusNfeTokenEncrypted);

@@ -20,7 +20,7 @@ export function CertificadoDigitalForm({ jaConfigurado }: CertificadoDigitalForm
       <h2 className="text-sm font-semibold text-gray-900">Certificado digital</h2>
 
       <p className="mt-2 text-sm text-gray-500">
-        A Focus NFe exige um certificado digital A1 (.pfx/.p12) para emitir notas;
+        Para emitir notas é exigido um certificado digital A1 (.pfx/.p12);
         vale para qualquer regime tributário, incluindo MEI.{" "}
         {jaConfigurado
           ? "Já existe um certificado configurado. Enviar um novo substitui o atual."
