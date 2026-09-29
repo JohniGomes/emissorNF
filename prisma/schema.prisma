@@ -144,6 +144,12 @@ model Nota {
   // tributação nacional do ISS referente ao serviço prestado.
   codigoTributacaoNacionalIss String?
 
+  // Só relevantes para emissão via NFS-e clássica (empresas não-MEI) — item
+  // da lista de serviços (LC 116/2003) e código NBS, quando o município exige.
+  // Nunca inferidos automaticamente: o usuário informa, ou fica em branco.
+  itemListaServico String?
+  codigoNbs        String?
+
   status        StatusNota @default(PENDENTE)
   numero        String?
   codigoVerificacao String?

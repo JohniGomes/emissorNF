@@ -96,6 +96,8 @@ export async function emitirNota(
   const idempotencyKey = (formData.get("idempotencyKey") as string) || undefined;
   const codigoTributacaoNacionalIss =
     (formData.get("codigoTributacaoNacionalIss") as string) || undefined;
+  const itemListaServico = (formData.get("itemListaServico") as string)?.trim() || undefined;
+  const codigoNbs = (formData.get("codigoNbs") as string)?.trim() || undefined;
 
   if (ehMei && !codigoTributacaoNacionalIss) {
     return { error: "Informe o código de tributação nacional do ISS." };
@@ -183,6 +185,8 @@ export async function emitirNota(
     desconto,
     dataCompetencia,
     observacoes,
+    itemListaServico,
+    codigoNbs,
   });
 
   revalidatePath("/dashboard/notas");

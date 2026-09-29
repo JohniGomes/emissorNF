@@ -53,6 +53,8 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const [dataCompetencia, setDataCompetencia] = useState(hojeISO());
   const [observacoes, setObservacoes] = useState("");
   const [codigoTributacaoNacionalIss, setCodigoTributacaoNacionalIss] = useState("");
+  const [itemListaServico, setItemListaServico] = useState("");
+  const [codigoNbs, setCodigoNbs] = useState("");
   const [mostrarOpcoesFiscais, setMostrarOpcoesFiscais] = useState(false);
 
   const [idempotencyKey] = useState(() => crypto.randomUUID());
@@ -144,6 +146,12 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             value={codigoTributacaoNacionalIss}
           />
         )}
+        {!ehMei && (
+          <>
+            <input type="hidden" name="itemListaServico" value={itemListaServico} />
+            <input type="hidden" name="codigoNbs" value={codigoNbs} />
+          </>
+        )}
 
         <div className="rounded-md border border-gray-200 bg-white">
           <div className="border-b border-gray-100 p-4">
@@ -200,6 +208,18 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 <p className="text-gray-900">
                   Código de tributação nacional do ISS: {codigoTributacaoNacionalIss}
                 </p>
+              </div>
+            )}
+
+            {!ehMei && (itemListaServico || codigoNbs) && (
+              <div>
+                <p className="text-xs font-medium uppercase text-gray-400">Opções fiscais</p>
+                {itemListaServico && (
+                  <p className="text-gray-900">
+                    Item da lista de serviços (LC 116/2003): {itemListaServico}
+                  </p>
+                )}
+                {codigoNbs && <p className="text-gray-900">Código NBS: {codigoNbs}</p>}
               </div>
             )}
           </div>
@@ -402,9 +422,37 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             )}
 
             {!ehMei && (
-              <p className="text-xs text-gray-500">
-                Nenhuma outra opção fiscal se aplica ao seu regime tributário para esta emissão.
-              </p>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Item da lista de serviços (LC 116/2003)
+                  </label>
+                  <input
+                    value={itemListaServico}
+                    onChange={(e) => setItemListaServico(e.target.value)}
+                    placeholder="ex: 1701 (Assessoria ou consultoria)"
+                    className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Alguns municípios exigem esse código pra autorizar a nota. Consulte a
+                    lista de serviços da LC 116/2003 ou seu contador se não souber o código
+                    do seu serviço — deixe em branco se seu município não exigir.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Código NBS</label>
+                  <input
+                    value={codigoNbs}
+                    onChange={(e) => setCodigoNbs(e.target.value)}
+                    placeholder="ex: 1.1301.30.00"
+                    className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Opcional — usado em alguns casos de exportação de serviços ou exigência
+                    municipal específica. Deixe em branco se não souber.
+                  </p>
+                </div>
+              </>
             )}
           </div>
         )}

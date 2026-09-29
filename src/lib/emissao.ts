@@ -22,6 +22,9 @@ interface EmitirNotaParaEmpresaParams {
   desconto?: number;
   dataCompetencia?: Date;
   observacoes?: string;
+  // Só relevantes para NFS-e clássica (empresas não-MEI).
+  itemListaServico?: string;
+  codigoNbs?: string;
 }
 
 /**
@@ -41,6 +44,8 @@ export async function emitirNotaParaEmpresa({
   desconto,
   dataCompetencia,
   observacoes,
+  itemListaServico,
+  codigoNbs,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
   if (!empresa.focusNfeTokenEncrypted) {
     throw new Error("Empresa sem token da Focus NFe configurado.");
@@ -85,6 +90,8 @@ export async function emitirNotaParaEmpresa({
         desconto,
         dataCompetencia: dataCompetencia ?? new Date(),
         observacoes,
+        itemListaServico: ehMei ? undefined : itemListaServico,
+        codigoNbs: ehMei ? undefined : codigoNbs,
         status: "PROCESSANDO",
         notaRecorrenteId,
         idempotencyKey,
@@ -125,6 +132,8 @@ export async function emitirNotaParaEmpresa({
       : await client.emitirNfse(nota.id, montarPayloadNfseClassica(empresa, cliente, {
           descricaoServico: discriminacaoParaFocus,
           valor: valorLiquido,
+          itemListaServico,
+          codigoNbs,
         }));
 
     const statusFinal =
@@ -179,7 +188,12 @@ export async function emitirNotaParaEmpresa({
 function montarPayloadNfseClassica(
   empresa: Empresa,
   cliente: Cliente,
-  dados: { descricaoServico: string; valor: number },
+  dados: {
+    descricaoServico: string;
+    valor: number;
+    itemListaServico?: string;
+    codigoNbs?: string;
+  },
 ): EmitirNfsePayload {
   return {
     data_emissao: new Date().toISOString(),
@@ -204,6 +218,8 @@ function montarPayloadNfseClassica(
     servico: {
       discriminacao: dados.descricaoServico,
       valor_servicos: dados.valor,
+      item_lista_servico: dados.itemListaServico,
+      codigo_nbs: dados.codigoNbs,
     },
   };
 }

@@ -44,6 +44,11 @@ export interface EmitirNfsePayload {
   servico: {
     discriminacao: string;
     valor_servicos: number;
+    // Item da lista de serviços (LC 116/2003) e NBS — exigidos por parte dos
+    // municípios na NFS-e clássica. Só enviados quando o usuário informa;
+    // nunca inferidos automaticamente (variam por município e por serviço).
+    item_lista_servico?: string;
+    codigo_nbs?: string;
   };
 }
 
