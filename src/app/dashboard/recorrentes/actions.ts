@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { registrarLog } from "@/lib/auditoria";
+import { paraNumero } from "@/lib/formatters";
 
 export interface RecorrenteState {
   error?: string;
@@ -54,7 +55,7 @@ export async function criarRecorrente(
     return { error: "Cliente inválido." };
   }
 
-  const valor = Number(valorStr.replace(",", "."));
+  const valor = paraNumero(valorStr);
   if (Number.isNaN(valor) || valor <= 0) {
     return { error: "Informe um valor válido." };
   }

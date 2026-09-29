@@ -31,8 +31,8 @@ export default function TermosDeUsoPage() {
           <h2 className="mb-2 text-base font-semibold text-gray-900">2. O serviço</h2>
           <p>
             O Notarium é uma ferramenta que facilita o preenchimento e o envio de notas fiscais
-            de serviço (NFS-e) através da integração com a Focus NFe. O Notarium não é uma
-            prefeitura, não é a Receita Federal, e não substitui a orientação de um contador.
+            de serviço (NFS-e) através da integração com um provedor fiscal. O Notarium não é
+            uma prefeitura, não é a Receita Federal, e não substitui a orientação de um contador.
             Somos uma camada de software sobre a infraestrutura fiscal já existente.
           </p>
         </section>
@@ -55,8 +55,8 @@ export default function TermosDeUsoPage() {
             4. Disponibilidade e limitações
           </h2>
           <p>
-            O Notarium depende da disponibilidade da Focus NFe e dos sistemas das prefeituras e
-            da NFS-e Nacional, fora do nosso controle direto. Notas podem ser rejeitadas por
+            O Notarium depende da disponibilidade do provedor fiscal e dos sistemas das
+            prefeituras e da NFS-e Nacional, fora do nosso controle direto. Notas podem ser rejeitadas por
             motivos fiscais alheios à nossa plataforma (ex: cadastro incompleto na prefeitura,
             código de serviço inválido para o município). Fazemos o possível para traduzir esses
             erros de forma clara, mas a autorização final é sempre do órgão fiscal competente.

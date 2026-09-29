@@ -198,12 +198,12 @@ function montarPayloadNfseClassica(
   return {
     data_emissao: new Date().toISOString(),
     prestador: {
-      cnpj: empresa.cnpj,
+      cnpj: empresa.cnpj.replace(/\D/g, ""),
       inscricao_municipal: empresa.inscricaoMunicipal ?? undefined,
       codigo_municipio: empresa.municipioCodigoIbge,
     },
     tomador: {
-      cnpj_cpf: cliente.documento,
+      cnpj_cpf: cliente.documento.replace(/\D/g, ""),
       razao_social: cliente.nome,
       email: cliente.email ?? undefined,
       endereco: {
@@ -212,7 +212,7 @@ function montarPayloadNfseClassica(
         bairro: cliente.bairro ?? undefined,
         codigo_municipio: empresa.municipioCodigoIbge,
         uf: cliente.uf ?? undefined,
-        cep: cliente.cep ?? undefined,
+        cep: cliente.cep ? cliente.cep.replace(/\D/g, "") : undefined,
       },
     },
     servico: {

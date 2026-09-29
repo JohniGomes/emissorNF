@@ -7,6 +7,7 @@ import {
   type EmpresaOnboardingState,
   type BuscarCnpjState,
 } from "./actions";
+import { formatarCep, formatarCpfCnpj } from "@/lib/formatters";
 
 export interface OnboardingEmpresaDefaultValues {
   cnpj: string;
@@ -41,12 +42,14 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
 
   const jaExiste = !!defaultValues;
 
-  const [cnpj, setCnpj] = useState(defaultValues?.cnpj ?? "");
+  const [cnpj, setCnpj] = useState(
+    defaultValues?.cnpj ? formatarCpfCnpj(defaultValues.cnpj) : "",
+  );
   const [razaoSocial, setRazaoSocial] = useState(defaultValues?.razaoSocial ?? "");
   const [nomeFantasia, setNomeFantasia] = useState(defaultValues?.nomeFantasia ?? "");
   const [telefone, setTelefone] = useState(defaultValues?.telefone ?? "");
   const [celular, setCelular] = useState(defaultValues?.celular ?? "");
-  const [cep, setCep] = useState(defaultValues?.cep ?? "");
+  const [cep, setCep] = useState(defaultValues?.cep ? formatarCep(defaultValues.cep) : "");
   const [logradouro, setLogradouro] = useState(defaultValues?.logradouro ?? "");
   const [numero, setNumero] = useState(defaultValues?.numero ?? "");
   const [complemento, setComplemento] = useState(defaultValues?.complemento ?? "");
@@ -84,7 +87,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
       setNumero(d.numero ?? "");
       setBairro(d.bairro ?? "");
       setMunicipio(d.municipio ?? "");
-      setCep(d.cep ?? "");
+      setCep(d.cep ? formatarCep(d.cep) : "");
       setUf(d.uf ?? "");
       setMunicipioCodigoIbge(d.codigoMunicipioIbge ?? "");
       if (d.regimeTributarioSugerido) {
@@ -103,7 +106,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             required
             readOnly={jaExiste}
             value={cnpj}
-            onChange={(e) => setCnpj(e.target.value)}
+            onChange={(e) => setCnpj(formatarCpfCnpj(e.target.value))}
             placeholder="00.000.000/0000-00"
             className={`w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
           />
@@ -186,7 +189,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
           <input
             name="cep"
             value={cep}
-            onChange={(e) => setCep(e.target.value)}
+            onChange={(e) => setCep(formatarCep(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>

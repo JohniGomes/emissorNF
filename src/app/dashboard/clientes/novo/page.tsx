@@ -9,6 +9,7 @@ import {
   type BuscarCnpjClienteState,
   type BuscarCepClienteState,
 } from "../actions";
+import { formatarCep, formatarCpfCnpj } from "@/lib/formatters";
 
 const initialState: ClienteState = {};
 const initialBuscaCnpjState: BuscarCnpjClienteState = {};
@@ -63,7 +64,7 @@ export default function NovoClientePage() {
       setBairro(d.bairro ?? "");
       setMunicipio(d.municipio ?? "");
       setUf(d.uf ?? "");
-      setCep(d.cep ?? "");
+      setCep(d.cep ? formatarCep(d.cep) : "");
       setMunicipioCodigoIbge(d.codigoMunicipioIbge ?? "");
     }
   }
@@ -105,8 +106,8 @@ export default function NovoClientePage() {
                 name="documento"
                 required
                 value={documento}
-                onChange={(e) => setDocumento(e.target.value)}
-                placeholder="Só números"
+                onChange={(e) => setDocumento(formatarCpfCnpj(e.target.value))}
+                placeholder="CPF ou CNPJ"
                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
               />
               {pareceCnpj && (
@@ -192,7 +193,7 @@ export default function NovoClientePage() {
               <input
                 name="cep"
                 value={cep}
-                onChange={(e) => setCep(e.target.value)}
+                onChange={(e) => setCep(formatarCep(e.target.value))}
                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
               />
               {cepSomenteDigitos.length === 8 && (

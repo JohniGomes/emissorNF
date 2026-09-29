@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { emitirNotaParaEmpresa, cancelarNotaParaEmpresa } from "@/lib/emissao";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { paraNumero } from "@/lib/formatters";
 import { sanitizarMensagemExibicao } from "@/lib/erros-fiscais";
 
 export interface NotaState {
@@ -120,14 +121,14 @@ export async function emitirNota(
     }
   }
 
-  const valor = Number(valorStr.replace(",", "."));
+  const valor = paraNumero(valorStr);
   if (Number.isNaN(valor) || valor <= 0) {
     return { error: "Informe um valor válido." };
   }
 
   let desconto: number | undefined;
   if (descontoStr.trim()) {
-    desconto = Number(descontoStr.replace(",", "."));
+    desconto = paraNumero(descontoStr);
     if (Number.isNaN(desconto) || desconto < 0) {
       return { error: "Informe um desconto válido." };
     }

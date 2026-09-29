@@ -205,7 +205,10 @@ export default async function NotasPage({
                   const paramsNovamente = new URLSearchParams({
                     clienteId: nota.clienteId,
                     descricao: nota.descricaoServico,
-                    valor: Number(nota.valor).toFixed(2).replace(".", ","),
+                    valor: Number(nota.valor).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }),
                   });
 
                   return (

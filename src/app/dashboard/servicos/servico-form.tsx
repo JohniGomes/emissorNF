@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useActionState } from "react";
 import { SeletorCodigoTributacao } from "@/components/seletor-codigo-tributacao";
 import { buscarNbsPorItem } from "@/lib/nbs";
+import { formatarValorMonetarioInput } from "@/lib/formatters";
 import type { ServicoState } from "./actions";
 
 interface ServicoFormProps {
@@ -26,6 +27,14 @@ export function ServicoForm({ action, defaultValues, textoBotao }: ServicoFormPr
     defaultValues?.codigoTributacaoNacional ?? "",
   );
   const [codigoNbs, setCodigoNbs] = useState(defaultValues?.codigoNbs ?? "");
+  const [valor, setValor] = useState(
+    defaultValues?.valor
+      ? defaultValues.valor.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "",
+  );
 
   const nbsCorrelacionados = useMemo(
     () => buscarNbsPorItem(codigoTributacaoNacional.slice(0, 4)),
@@ -107,7 +116,8 @@ export function ServicoForm({ action, defaultValues, textoBotao }: ServicoFormPr
           name="valor"
           inputMode="decimal"
           placeholder="0,00"
-          defaultValue={defaultValues?.valor?.toFixed(2).replace(".", ",")}
+          value={valor}
+          onChange={(e) => setValor(formatarValorMonetarioInput(e.target.value))}
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">

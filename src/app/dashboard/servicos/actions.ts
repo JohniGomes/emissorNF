@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { registrarLog } from "@/lib/auditoria";
 import { buscarCodigoTributacaoNacional } from "@/lib/codigoTributacaoNacional";
+import { paraNumero } from "@/lib/formatters";
 
 export interface ServicoState {
   error?: string;
@@ -102,7 +103,7 @@ export async function atualizarServico(
     return { error: "Preencha nome e descrição do serviço." };
   }
 
-  const valor = valorStr ? Number(valorStr.replace(",", ".")) : 0;
+  const valor = valorStr ? paraNumero(valorStr) : 0;
   if (Number.isNaN(valor) || valor < 0) {
     return { error: "Informe um valor válido." };
   }

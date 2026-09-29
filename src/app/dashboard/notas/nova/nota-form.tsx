@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { emitirNota, type NotaState } from "../actions";
 import { buscarCodigoTributacaoNacional } from "@/lib/codigoTributacaoNacional";
 import { buscarNbsPorItem } from "@/lib/nbs";
+import { formatarCpfCnpj, formatarValorMonetarioInput, paraNumero } from "@/lib/formatters";
 
 interface Servico {
   id: string;
@@ -84,8 +85,8 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const clienteManualSelecionado = clienteId === CLIENTE_MANUAL;
   const clienteSelecionado = clientes.find((c) => c.id === clienteId);
 
-  const valorNumerico = Number((valor || "0").replace(",", "."));
-  const descontoNumerico = Number((desconto || "0").replace(",", "."));
+  const valorNumerico = valor ? paraNumero(valor) : 0;
+  const descontoNumerico = desconto ? paraNumero(desconto) : 0;
   const valorLiquido = valorNumerico - (Number.isNaN(descontoNumerico) ? 0 : descontoNumerico);
 
   const erroValidacao = useMemo(() => {
@@ -128,7 +129,14 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
     const servico = servicos.find((s) => s.id === id);
     if (servico) {
       setDescricaoServico(servico.descricao);
-      if (servico.valor > 0) setValor(servico.valor.toFixed(2).replace(".", ","));
+      if (servico.valor > 0) {
+        setValor(
+          servico.valor.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+        );
+      }
       if (servico.codigoTributacaoNacional) {
         if (ehMei) setCodigoTributacaoNacionalIss(servico.codigoTributacaoNacional);
         else setItemListaServico(servico.codigoTributacaoNacional);
@@ -145,7 +153,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const nomeClienteRevisao = clienteManualSelecionado
     ? clienteManualNome
     : clienteSelecionado
-      ? `${clienteSelecionado.nome} (${clienteSelecionado.documento})`
+      ? `${clienteSelecionado.nome} (${formatarCpfCnpj(clienteSelecionado.documento)})`
       : "";
 
   if (etapa === "revisao") {
@@ -309,7 +317,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
             <option key={cliente.id} value={cliente.id}>
-              {cliente.nome} ({cliente.documento})
+              {cliente.nome} ({formatarCpfCnpj(cliente.documento)})
             </option>
           ))}
           <option value={CLIENTE_MANUAL}>Cliente não cadastrado (inserir dados)</option>
@@ -394,7 +402,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             inputMode="decimal"
             placeholder="0,00"
             value={valor}
-            onChange={(e) => setValor(e.target.value)}
+            onChange={(e) => setValor(formatarValorMonetarioInput(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
@@ -404,7 +412,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             inputMode="decimal"
             placeholder="0,00"
             value={desconto}
-            onChange={(e) => setDesconto(e.target.value)}
+            onChange={(e) => setDesconto(formatarValorMonetarioInput(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>

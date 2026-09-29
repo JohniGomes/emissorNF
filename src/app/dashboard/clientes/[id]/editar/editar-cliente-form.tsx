@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import type { Cliente } from "@prisma/client";
 import { atualizarCliente, type ClienteState } from "../../actions";
+import { formatarCep, formatarCpfCnpj } from "@/lib/formatters";
 
 const initialState: ClienteState = {};
 
@@ -15,8 +16,10 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
   const [mostrarFiscalAvancado, setMostrarFiscalAvancado] = useState(
     !!(cliente.inscricaoMunicipal || cliente.inscricaoEstadual),
   );
+  const [documento, setDocumento] = useState(formatarCpfCnpj(cliente.documento));
+  const [cep, setCep] = useState(cliente.cep ? formatarCep(cliente.cep) : "");
 
-  const documentoSomenteDigitos = cliente.documento.replace(/\D/g, "");
+  const documentoSomenteDigitos = documento.replace(/\D/g, "");
   const pareceCnpj = documentoSomenteDigitos.length === 14;
   const tipoPessoa = pareceCnpj
     ? "Pessoa Jurídica"
@@ -48,7 +51,8 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="documento"
             required
-            defaultValue={cliente.documento}
+            value={documento}
+            onChange={(e) => setDocumento(formatarCpfCnpj(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
           {tipoPessoa && <p className="mt-1 text-xs font-medium text-gray-500">{tipoPessoa}</p>}
@@ -97,7 +101,8 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <label className="block text-sm font-medium text-gray-700">CEP</label>
           <input
             name="cep"
-            defaultValue={cliente.cep ?? ""}
+            value={cep}
+            onChange={(e) => setCep(formatarCep(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
