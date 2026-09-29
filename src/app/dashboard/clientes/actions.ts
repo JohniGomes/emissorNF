@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { registrarLog } from "@/lib/auditoria";
 import { buscarDadosCnpj, type DadosCnpj } from "@/lib/cnpj";
+import { buscarDadosCep, type DadosCep } from "@/lib/cep";
 
 export interface ClienteState {
   error?: string;
@@ -14,6 +15,11 @@ export interface ClienteState {
 export interface BuscarCnpjClienteState {
   error?: string;
   dados?: DadosCnpj;
+}
+
+export interface BuscarCepClienteState {
+  error?: string;
+  dados?: DadosCep;
 }
 
 export async function buscarCnpjClienteAction(
@@ -36,6 +42,47 @@ export async function buscarCnpjClienteAction(
   }
 }
 
+export async function buscarCepClienteAction(
+  _prevState: BuscarCepClienteState,
+  formData: FormData,
+): Promise<BuscarCepClienteState> {
+  const cep = formData.get("cep") as string;
+
+  if (!cep) {
+    return { error: "Informe um CEP." };
+  }
+
+  try {
+    const dados = await buscarDadosCep(cep);
+    return { dados };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Não foi possível buscar o CEP.",
+    };
+  }
+}
+
+function lerCamposCliente(formData: FormData) {
+  return {
+    nome: formData.get("nome") as string,
+    nomeFantasia: (formData.get("nomeFantasia") as string) || null,
+    documento: formData.get("documento") as string,
+    email: (formData.get("email") as string) || null,
+    telefone: (formData.get("telefone") as string) || null,
+    whatsapp: (formData.get("whatsapp") as string) || null,
+    logradouro: (formData.get("logradouro") as string) || null,
+    numero: (formData.get("numero") as string) || null,
+    complemento: (formData.get("complemento") as string) || null,
+    bairro: (formData.get("bairro") as string) || null,
+    municipio: (formData.get("municipio") as string) || null,
+    municipioCodigoIbge: (formData.get("municipioCodigoIbge") as string) || null,
+    uf: (formData.get("uf") as string) || null,
+    cep: (formData.get("cep") as string) || null,
+    inscricaoMunicipal: (formData.get("inscricaoMunicipal") as string) || null,
+    inscricaoEstadual: (formData.get("inscricaoEstadual") as string) || null,
+  };
+}
+
 export async function criarCliente(
   _prevState: ClienteState,
   formData: FormData,
@@ -48,32 +95,16 @@ export async function criarCliente(
   });
   if (!empresa) redirect("/dashboard/empresa");
 
-  const nome = formData.get("nome") as string;
-  const documento = formData.get("documento") as string;
-  const email = (formData.get("email") as string) || null;
-  const logradouro = (formData.get("logradouro") as string) || null;
-  const numero = (formData.get("numero") as string) || null;
-  const bairro = (formData.get("bairro") as string) || null;
-  const municipio = (formData.get("municipio") as string) || null;
-  const uf = (formData.get("uf") as string) || null;
-  const cep = (formData.get("cep") as string) || null;
+  const campos = lerCamposCliente(formData);
 
-  if (!nome || !documento) {
+  if (!campos.nome || !campos.documento) {
     return { error: "Preencha nome e documento (CPF/CNPJ)." };
   }
 
   const cliente = await prisma.cliente.create({
     data: {
       empresaId: empresa.id,
-      nome,
-      documento,
-      email,
-      logradouro,
-      numero,
-      bairro,
-      municipio,
-      uf,
-      cep,
+      ...campos,
     },
   });
 
@@ -116,23 +147,15 @@ export async function atualizarCliente(
     return { error: "Cliente não encontrado." };
   }
 
-  const nome = formData.get("nome") as string;
-  const documento = formData.get("documento") as string;
-  const email = (formData.get("email") as string) || null;
-  const logradouro = (formData.get("logradouro") as string) || null;
-  const numero = (formData.get("numero") as string) || null;
-  const bairro = (formData.get("bairro") as string) || null;
-  const municipio = (formData.get("municipio") as string) || null;
-  const uf = (formData.get("uf") as string) || null;
-  const cep = (formData.get("cep") as string) || null;
+  const campos = lerCamposCliente(formData);
 
-  if (!nome || !documento) {
+  if (!campos.nome || !campos.documento) {
     return { error: "Preencha nome e documento (CPF/CNPJ)." };
   }
 
   await prisma.cliente.update({
     where: { id: clienteId },
-    data: { nome, documento, email, logradouro, numero, bairro, municipio, uf, cep },
+    data: campos,
   });
 
   await registrarLog({
