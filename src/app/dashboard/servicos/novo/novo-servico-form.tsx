@@ -109,13 +109,13 @@ export function NovoServicoForm() {
                 <option value="">Nenhum</option>
                 {nbsCorrelacionados.map((item) => (
                   <option key={item.nbs} value={item.nbs}>
-                    {item.nbs} — {item.descricao}
+                    {item.nbs} - {item.descricao}
                   </option>
                 ))}
               </select>
             ) : (
               <p className="mt-1 text-xs text-gray-500">
-                Nenhum NBS oficialmente correlacionado a este item — pode deixar em branco.
+                Nenhum NBS oficialmente correlacionado a este item - pode deixar em branco.
               </p>
             )}
           </div>
@@ -144,11 +144,11 @@ export function NovoServicoForm() {
               >
                 <div>
                   <p className="font-medium text-gray-900">
-                    {item.codigoTributacaoNacional} — {item.descricao}
+                    {item.codigoTributacaoNacional} - {item.descricao}
                   </p>
                   {item.codigoNbs && (
                     <p className="text-xs text-gray-500">
-                      NBS: {item.codigoNbs} — {item.descricaoNbs}
+                      NBS: {item.codigoNbs} - {item.descricaoNbs}
                     </p>
                   )}
                 </div>

@@ -31,8 +31,8 @@ export default async function ServicosPage() {
       </div>
 
       <p className="mb-4 text-sm text-gray-500">
-        Cadastre os serviços que você presta pelo código de tributação nacional —
-        descrição e NBS vêm da tabela oficial — pra selecionar rapidamente na hora
+        Cadastre os serviços que você presta pelo código de tributação nacional -
+        descrição e NBS vêm da tabela oficial - pra selecionar rapidamente na hora
         de emitir uma nota.
       </p>
 
@@ -68,9 +68,9 @@ export default async function ServicosPage() {
                 <tr key={s.id}>
                   <td className="px-4 py-2 text-sm text-gray-900">{s.descricao}</td>
                   <td className="px-4 py-2 text-sm text-gray-500">
-                    {s.codigoTributacaoNacional || "—"}
+                    {s.codigoTributacaoNacional || "-"}
                   </td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{s.codigoNbs || "—"}</td>
+                  <td className="px-4 py-2 text-sm text-gray-500">{s.codigoNbs || "-"}</td>
                   <td className="px-4 py-2 text-sm text-gray-500">
                     {Number(s.valor).toLocaleString("pt-BR", {
                       style: "currency",

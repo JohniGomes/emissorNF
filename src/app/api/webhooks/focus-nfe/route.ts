@@ -38,7 +38,7 @@ const ESTADOS_FINAIS: StatusNota[] = ["AUTORIZADA", "ERRO", "CANCELADA"];
  * Recebe as notificações assíncronas da Focus NFe (autorização, erro,
  * cancelamento) em vez de depender só do retorno síncrono da emissão.
  * A URL deve ser cadastrada no painel da Focus com o query param `token`
- * batendo com FOCUS_NFE_WEBHOOK_SECRET — a Focus não assina o webhook,
+ * batendo com FOCUS_NFE_WEBHOOK_SECRET - a Focus não assina o webhook,
  * então esse token é a única forma de confirmar que a chamada é legítima.
  */
 export async function POST(request: NextRequest) {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (ESTADOS_FINAIS.includes(nota.status)) {
-    // Nota já está num estado final — evita que um webhook atrasado ou
+    // Nota já está num estado final - evita que um webhook atrasado ou
     // duplicado sobrescreva um resultado já consolidado.
     return NextResponse.json({ ok: true, ignorado: "estado_final_ja_atingido" });
   }

@@ -2,7 +2,7 @@
  * Traduz o texto bruto que a Focus NFe devolve em erros (em geral inglês
  * técnico de API ou jargão fiscal) para algo que o usuário do Notarium
  * entenda, com uma dica de como resolver quando dá pra saber a causa.
- * Nunca inventa causa fiscal — quando não reconhece o padrão, mostra a
+ * Nunca inventa causa fiscal - quando não reconhece o padrão, mostra a
  * mensagem original da Focus prefixada, sem fingir que sabe o motivo.
  */
 
@@ -23,7 +23,7 @@ const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNorm
     regex: /codigo_municipio|código do município|codigo_municipio_prestacao|codigo_municipio_emissora/i,
     normalizar: () => ({
       mensagem: "Faltou o código do município (IBGE) para autorizar a nota.",
-      dica: 'Confira o "Código IBGE do município" em "Sua empresa" — ou, se o problema for do cliente, o município cadastrado nele.',
+      dica: 'Confira o "Código IBGE do município" em "Sua empresa" - ou, se o problema for do cliente, o município cadastrado nele.',
     }),
   },
   {

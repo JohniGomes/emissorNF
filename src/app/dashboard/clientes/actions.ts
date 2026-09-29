@@ -138,7 +138,7 @@ export async function atualizarCliente(
 ): Promise<ClienteState> {
   const { empresa, userId } = await getEmpresaDoUsuario();
 
-  // Reconfirma que o cliente pertence a esta empresa antes de alterar —
+  // Reconfirma que o cliente pertence a esta empresa antes de alterar -
   // nunca confiamos apenas no id vindo do formulário.
   const clienteExistente = await prisma.cliente.findFirst({
     where: { id: clienteId, empresaId: empresa.id },

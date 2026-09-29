@@ -44,7 +44,7 @@ export interface EmitirNfsePayload {
   servico: {
     discriminacao: string;
     valor_servicos: number;
-    // Item da lista de serviços (LC 116/2003) e NBS — exigidos por parte dos
+    // Item da lista de serviços (LC 116/2003) e NBS - exigidos por parte dos
     // municípios na NFS-e clássica. Só enviados quando o usuário informa;
     // nunca inferidos automaticamente (variam por município e por serviço).
     item_lista_servico?: string;
@@ -102,7 +102,7 @@ export interface CriarEmpresaFocusNfeResponse {
 /**
  * Cria uma empresa na Focus NFe via API de gestão de conta (usa o token
  * principal da plataforma, não o token de uma empresa). Sempre chamada contra
- * o host de produção — é assim que a Focus documenta o endpoint de gestão,
+ * o host de produção - é assim que a Focus documenta o endpoint de gestão,
  * independente do ambiente em que a empresa criada vai emitir notas.
  */
 export async function criarEmpresaFocusNfe(
@@ -159,7 +159,7 @@ export async function criarEmpresaFocusNfe(
 
 /**
  * Envia (ou substitui) o certificado digital A1 (.pfx/.p12) de uma empresa já
- * cadastrada na Focus NFe. Usa o mesmo token principal da conta da criação —
+ * cadastrada na Focus NFe. Usa o mesmo token principal da conta da criação -
  * a empresa é identificada pelo id numérico que a Focus atribuiu a ela.
  */
 export async function atualizarCertificadoFocusNfe(
@@ -266,7 +266,7 @@ export class FocusNfeClient {
   }
 
   /**
-   * Emite uma NFS-e Nacional (DPS) — usada por empresas MEI, que a Focus NFe
+   * Emite uma NFS-e Nacional (DPS) - usada por empresas MEI, que a Focus NFe
    * exige que emitam por esse padrão em vez da NFS-e clássica. `referencia` é
    * o identificador único (o id da Nota no nosso banco), igual à NFS-e clássica.
    */
@@ -327,7 +327,7 @@ function normalizeFocusResponse(
 ): FocusNfeResponse {
   if (!response.ok && (!data.erros || data.erros.length === 0)) {
     // A NFS-e clássica erra com `erros: [...]`; a DPS Nacional erra com um
-    // único `{codigo, mensagem}` no corpo — normalizamos os dois pro mesmo formato.
+    // único `{codigo, mensagem}` no corpo - normalizamos os dois pro mesmo formato.
     return {
       ...data,
       erros: [

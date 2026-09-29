@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 export const metadata = {
-  title: "Política de Privacidade — Notarium",
+  title: "Política de Privacidade - Notarium",
 };
 
 export default function PoliticaPrivacidadePage() {
@@ -37,7 +37,7 @@ export default function PoliticaPrivacidadePage() {
             </li>
             <li>
               Dados dos seus clientes (tomadores de serviço): nome/razão social, CPF ou CNPJ,
-              e-mail e endereço — necessários para emitir a nota fiscal em nome deles.
+              e-mail e endereço - necessários para emitir a nota fiscal em nome deles.
             </li>
             <li>Dados das notas emitidas: descrição do serviço, valor e o retorno da Focus NFe.</li>
           </ul>

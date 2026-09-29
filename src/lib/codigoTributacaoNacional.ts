@@ -3,12 +3,12 @@ import dados from "./data/codigo-tributacao-nacional.json";
 /**
  * Tabela nacional de códigos de tributação (cTribNac), usada tanto no campo
  * "Código de tributação nacional do ISS" (NFS-e Nacional/DPS, obrigatório
- * para MEI) quanto no "Item da lista de serviços" da NFS-e clássica — é a
+ * para MEI) quanto no "Item da lista de serviços" da NFS-e clássica - é a
  * mesma tabela oficial (Anexo do emissor nacional gov.br/nfse, derivada da
  * lista de serviços da LC 116/2003), só muda o formato do código.
  *
  * Fonte: github.com/transformax2205-droid/codigo-tributacao-nacional-nfse
- * (CC BY 4.0 — dados públicos do gov.br/nfse e da LC 116/2003).
+ * (CC BY 4.0 - dados públicos do gov.br/nfse e da LC 116/2003).
  */
 export interface CodigoTributacaoNacional {
   codigo: string; // ex: "170101"

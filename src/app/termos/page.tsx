@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 export const metadata = {
-  title: "Termos de Uso — Notarium",
+  title: "Termos de Uso - Notarium",
 };
 
 export default function TermosDeUsoPage() {
@@ -32,7 +32,7 @@ export default function TermosDeUsoPage() {
           <p>
             O Notarium é uma ferramenta que facilita o preenchimento e o envio de notas fiscais
             de serviço (NFS-e) através da integração com a Focus NFe. O Notarium não é uma
-            prefeitura, não é a Receita Federal, e não substitui a orientação de um contador —
+            prefeitura, não é a Receita Federal, e não substitui a orientação de um contador -
             somos uma camada de software sobre a infraestrutura fiscal já existente.
           </p>
         </section>
@@ -44,7 +44,7 @@ export default function TermosDeUsoPage() {
           <p>
             Você é responsável pela exatidão dos dados informados (regime tributário, código de
             tributação do serviço, valores, dados do cliente). O Notarium repassa esses dados ao
-            provedor fiscal e não valida seu enquadramento tributário — recomendamos sempre
+            provedor fiscal e não valida seu enquadramento tributário - recomendamos sempre
             revisar com seu contador antes de emitir, especialmente em caso de dúvida sobre
             código de serviço ou regime especial de tributação.
           </p>
@@ -67,7 +67,7 @@ export default function TermosDeUsoPage() {
           <h2 className="mb-2 text-base font-semibold text-gray-900">5. Conta e segurança</h2>
           <p>
             Você é responsável por manter sua senha em sigilo e por todas as ações realizadas na
-            sua conta. Cada empresa cadastrada tem um único login — não compartilhamos acesso
+            sua conta. Cada empresa cadastrada tem um único login - não compartilhamos acesso
             multiusuário nesta versão do produto.
           </p>
         </section>

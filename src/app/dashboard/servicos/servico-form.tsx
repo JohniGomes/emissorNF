@@ -61,7 +61,7 @@ export function ServicoForm({ action, defaultValues, textoBotao }: ServicoFormPr
             <option value="">Nenhum</option>
             {nbsCorrelacionados.map((item) => (
               <option key={item.nbs} value={item.nbs}>
-                {item.nbs} — {item.descricao}
+                {item.nbs} - {item.descricao}
               </option>
             ))}
           </select>
@@ -94,7 +94,7 @@ export function ServicoForm({ action, defaultValues, textoBotao }: ServicoFormPr
           required
           rows={3}
           defaultValue={defaultValues?.descricao}
-          placeholder="Vai preencher a descrição da nota automaticamente — você pode editar depois."
+          placeholder="Vai preencher a descrição da nota automaticamente - você pode editar depois."
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
       </div>
@@ -111,7 +111,7 @@ export function ServicoForm({ action, defaultValues, textoBotao }: ServicoFormPr
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
-          Opcional — deixe 0 se o valor variar por cliente. Você sempre pode
+          Opcional - deixe 0 se o valor variar por cliente. Você sempre pode
           ajustar na hora de emitir.
         </p>
       </div>

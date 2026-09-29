@@ -8,7 +8,7 @@ export interface Plano {
 }
 
 /**
- * Placeholder — ajustar quando os preços/planos reais forem definidos.
+ * Placeholder - ajustar quando os preços/planos reais forem definidos.
  * Único lugar a editar; nada mais no código depende de valores fixos.
  */
 export const PLANOS: Plano[] = [

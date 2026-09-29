@@ -11,7 +11,7 @@ interface RegistrarLogParams {
 
 /**
  * Registra um evento na trilha de auditoria. Nunca deve lançar erro para o
- * chamador — um problema no log não pode derrubar a operação de negócio que
+ * chamador - um problema no log não pode derrubar a operação de negócio que
  * está sendo auditada.
  */
 export async function registrarLog({

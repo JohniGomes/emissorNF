@@ -36,7 +36,7 @@ export default async function NovaNotaPage({
   });
 
   const { clienteId, descricao, valor } = await searchParams;
-  // "Emitir novamente" preenche a partir de uma nota anterior — só se o
+  // "Emitir novamente" preenche a partir de uma nota anterior - só se o
   // cliente ainda existir na carteira da empresa (nunca confiamos no id vindo
   // da URL sem confirmar que ele pertence a este usuário).
   const clienteValido =

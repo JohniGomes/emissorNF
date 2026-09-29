@@ -331,7 +331,7 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Opcional — muitos MEIs não têm. Não é possível buscar automaticamente; consulte no cartão CNPJ/prefeitura se tiver.
+            Opcional - muitos MEIs não têm. Não é possível buscar automaticamente; consulte no cartão CNPJ/prefeitura se tiver.
           </p>
         </div>
       </div>

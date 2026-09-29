@@ -190,7 +190,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
               />
             </div>
             <p className="col-span-2 text-xs text-gray-500">
-              Só necessário em municípios/regimes específicos — deixe em branco se não souber.
+              Só necessário em municípios/regimes específicos - deixe em branco se não souber.
             </p>
           </div>
         )}

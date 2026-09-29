@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useActionState } from "react";
 import { emitirNota, type NotaState } from "../actions";
-import { SeletorCodigoTributacao } from "@/components/seletor-codigo-tributacao";
 import { buscarCodigoTributacaoNacional } from "@/lib/codigoTributacaoNacional";
 import { buscarNbsPorItem } from "@/lib/nbs";
 
@@ -67,6 +66,19 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
     () => buscarNbsPorItem(itemListaServico.slice(0, 4)),
     [itemListaServico],
   );
+
+  // Só os códigos de tributação nacional já cadastrados em "Meus Serviços" -
+  // nunca a tabela oficial inteira, pra manter a lista curta e relevante.
+  const codigosCadastrados = useMemo(() => {
+    const vistos = new Map<string, string>();
+    for (const s of servicos) {
+      if (s.codigoTributacaoNacional && !vistos.has(s.codigoTributacaoNacional)) {
+        const info = buscarCodigoTributacaoNacional(s.codigoTributacaoNacional, 1)[0];
+        vistos.set(s.codigoTributacaoNacional, info?.descricao ?? s.nome);
+      }
+    }
+    return Array.from(vistos.entries()).map(([codigo, descricao]) => ({ codigo, descricao }));
+  }, [servicos]);
 
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
@@ -134,7 +146,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const nomeClienteRevisao = clienteManualSelecionado
     ? clienteManualNome
     : clienteSelecionado
-      ? `${clienteSelecionado.nome} — ${clienteSelecionado.documento}`
+      ? `${clienteSelecionado.nome} - ${clienteSelecionado.documento}`
       : "";
 
   if (etapa === "revisao") {
@@ -177,7 +189,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           <div className="border-b border-gray-100 p-4">
             <h2 className="text-sm font-semibold text-gray-900">Revisão da nota</h2>
             <p className="mt-1 text-xs text-gray-500">
-              Confira os dados antes de emitir — depois de emitida a nota não pode ser editada.
+              Confira os dados antes de emitir - depois de emitida a nota não pode ser editada.
             </p>
           </div>
 
@@ -229,7 +241,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                   Código de tributação nacional do ISS: {codigoTributacaoNacionalIss}
                   {(() => {
                     const item = buscarCodigoTributacaoNacional(codigoTributacaoNacionalIss, 1)[0];
-                    return item ? ` — ${item.descricao}` : "";
+                    return item ? ` - ${item.descricao}` : "";
                   })()}
                 </p>
               </div>
@@ -245,7 +257,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                       itemListaServico}
                     {(() => {
                       const item = buscarCodigoTributacaoNacional(itemListaServico, 1)[0];
-                      return item ? ` — ${item.descricao}` : "";
+                      return item ? ` - ${item.descricao}` : "";
                     })()}
                   </p>
                 )}
@@ -254,7 +266,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                     Código NBS: {codigoNbs}
                     {(() => {
                       const item = nbsCorrelacionados.find((n) => n.nbs === codigoNbs);
-                      return item ? ` — ${item.descricao}` : "";
+                      return item ? ` - ${item.descricao}` : "";
                     })()}
                   </p>
                 )}
@@ -298,7 +310,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
             <option key={cliente.id} value={cliente.id}>
-              {cliente.nome} — {cliente.documento}
+              {cliente.nome} - {cliente.documento}
             </option>
           ))}
           <option value={CLIENTE_MANUAL}>Cliente não cadastrado (inserir dados)</option>
@@ -361,7 +373,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            Preenche a descrição e o valor automaticamente — você pode ajustar antes de emitir.
+            Preenche a descrição e o valor automaticamente - você pode ajustar antes de emitir.
           </p>
         </div>
       )}
@@ -414,7 +426,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
-          Mês/competência a que o serviço se refere — pode ser diferente da data de emissão.
+          Mês/competência a que o serviço se refere - pode ser diferente da data de emissão.
         </p>
       </div>
 
@@ -445,15 +457,35 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 <label className="block text-sm font-medium text-gray-700">
                   Código de tributação nacional do ISS *
                 </label>
-                <SeletorCodigoTributacao
-                  value={codigoTributacaoNacionalIss}
-                  onChange={setCodigoTributacaoNacionalIss}
-                  formato="nacional"
-                />
+                {codigosCadastrados.length > 0 ? (
+                  <select
+                    value={codigoTributacaoNacionalIss}
+                    onChange={(e) => setCodigoTributacaoNacionalIss(e.target.value)}
+                    className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                  >
+                    <option value="">Selecione</option>
+                    {codigosCadastrados.map((item) => (
+                      <option key={item.codigo} value={item.codigo}>
+                        {item.codigo} - {item.descricao}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Nenhum serviço cadastrado com código de tributação nacional ainda.{" "}
+                    <a
+                      href="/dashboard/servicos/novo"
+                      target="_blank"
+                      className="font-medium text-brand-brown hover:underline"
+                    >
+                      Cadastre em Meus Serviços
+                    </a>
+                    .
+                  </p>
+                )}
                 <p className="mt-1 text-xs text-gray-500">
-                  Exigido pela NFS-e Nacional para empresas MEI. Digite o código ou parte da
-                  descrição do serviço pra filtrar a tabela oficial — consulte seu contador se
-                  não souber qual se aplica.
+                  Exigido pela NFS-e Nacional para empresas MEI. Só mostra os códigos já
+                  cadastrados em Meus Serviços.
                 </p>
               </div>
             )}
@@ -464,15 +496,39 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                   <label className="block text-sm font-medium text-gray-700">
                     Item da lista de serviços (LC 116/2003)
                   </label>
-                  <SeletorCodigoTributacao
-                    value={itemListaServico}
-                    onChange={setItemListaServico}
-                    formato="lc116"
-                  />
+                  {codigosCadastrados.length > 0 ? (
+                    <select
+                      value={itemListaServico}
+                      onChange={(e) => setItemListaServico(e.target.value)}
+                      className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                    >
+                      <option value="">Selecione</option>
+                      {codigosCadastrados.map((item) => {
+                        const info = buscarCodigoTributacaoNacional(item.codigo, 1)[0];
+                        return (
+                          <option key={item.codigo} value={item.codigo}>
+                            {info?.codigoFormatado ?? item.codigo} - {item.descricao}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-500">
+                      Nenhum serviço cadastrado com código de tributação nacional ainda.{" "}
+                      <a
+                        href="/dashboard/servicos/novo"
+                        target="_blank"
+                        className="font-medium text-brand-brown hover:underline"
+                      >
+                        Cadastre em Meus Serviços
+                      </a>
+                      .
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-gray-500">
-                    Alguns municípios exigem esse código pra autorizar a nota. Digite o
-                    código ou parte da descrição do serviço pra filtrar — deixe em branco se
-                    seu município não exigir.
+                    Alguns municípios exigem esse código pra autorizar a nota. Só mostra os
+                    códigos já cadastrados em Meus Serviços - deixe em branco se seu
+                    município não exigir.
                   </p>
                 </div>
                 <div>
@@ -494,14 +550,14 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                         <option value="">Nenhum</option>
                         {nbsCorrelacionados.map((item) => (
                           <option key={item.nbs} value={item.nbs}>
-                            {item.nbs} — {item.descricao}
+                            {item.nbs} - {item.descricao}
                           </option>
                         ))}
                         <option value="__manual__">Outro (digitar manualmente)</option>
                       </select>
                       <p className="mt-1 text-xs text-gray-500">
                         Opções pré-filtradas pela correlação oficial com o item de serviço
-                        escolhido acima. Opcional — deixe "Nenhum" se não souber.
+                        escolhido acima. Opcional - deixe "Nenhum" se não souber.
                       </p>
                     </>
                   ) : (
@@ -514,9 +570,9 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                       />
                       <p className="mt-1 text-xs text-gray-500">
                         {itemListaServico
-                          ? "Não há NBS pré-cadastrado pra este item — digite manualmente se souber."
+                          ? "Não há NBS pré-cadastrado pra este item - digite manualmente se souber."
                           : "Escolha o item da lista de serviços acima pra ver as opções de NBS correlacionadas."}{" "}
-                        Opcional — deixe em branco se não souber.
+                        Opcional - deixe em branco se não souber.
                       </p>
                       {nbsManual && (
                         <button

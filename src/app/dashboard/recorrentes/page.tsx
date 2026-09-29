@@ -34,7 +34,7 @@ export default async function RecorrentesPage() {
       <p className="mb-4 text-sm text-gray-500">
         Configure um serviço que você presta todo mês pro mesmo cliente e o
         Notarium emite a nota automaticamente todo mês, no dia que você
-        escolher — pelo número de meses que você definir, ou indefinidamente.
+        escolher - pelo número de meses que você definir, ou indefinidamente.
       </p>
 
       {recorrentes.length === 0 ? (
@@ -88,7 +88,7 @@ export default async function RecorrentesPage() {
                   <td className="px-4 py-2 text-sm text-gray-500">
                     {r.ultimaExecucao
                       ? new Date(r.ultimaExecucao).toLocaleDateString("pt-BR")
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className="px-4 py-2 text-sm">
                     {(() => {
@@ -116,7 +116,7 @@ export default async function RecorrentesPage() {
                   </td>
                   <td className="px-4 py-2 text-sm">
                     {r.mesesRestantes === 0 && !r.ativo ? (
-                      <span className="text-xs text-gray-400">—</span>
+                      <span className="text-xs text-gray-400">-</span>
                     ) : (
                       <form action={alternarRecorrente}>
                         <input type="hidden" name="id" value={r.id} />

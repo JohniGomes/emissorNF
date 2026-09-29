@@ -34,7 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!email || !password) return null;
 
-        // Bloqueia por e-mail antes mesmo de checar a senha — protege contra
+        // Bloqueia por e-mail antes mesmo de checar a senha - protege contra
         // força bruta sem revelar ao cliente se o bloqueio é por excesso de
         // tentativas ou credencial errada (a mensagem que aparece é a mesma).
         if (await excedeuTentativas(email)) {

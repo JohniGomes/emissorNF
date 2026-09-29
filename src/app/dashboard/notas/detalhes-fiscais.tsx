@@ -24,7 +24,7 @@ function achatar(obj: Record<string, unknown>, prefixo = ""): Array<[string, str
   return pares;
 }
 
-// Campos técnicos que não interessam ao usuário final nesta seção — ele já
+// Campos técnicos que não interessam ao usuário final nesta seção - ele já
 // vê status/número/link em outro lugar da tela.
 const CAMPOS_OCULTOS = new Set([
   "status",

@@ -3,7 +3,7 @@ import { HelpCircle, Bell } from "lucide-react";
 
 /**
  * Fundo "fantasma" do dashboard, mostrado apagado atrás do modal de
- * onboarding — mesma sidebar de verdade, sem interatividade, só pra dar a
+ * onboarding - mesma sidebar de verdade, sem interatividade, só pra dar a
  * sensação de "é isso que você vai acessar assim que terminar".
  */
 export function OnboardingBackdrop() {

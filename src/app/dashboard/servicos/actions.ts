@@ -34,7 +34,7 @@ export interface CriarServicosEmLoteState {
 
 /**
  * Cria vários serviços de uma vez a partir do código de tributação nacional
- * escolhido (+ NBS opcional) — nome/descrição vêm da própria tabela oficial,
+ * escolhido (+ NBS opcional) - nome/descrição vêm da própria tabela oficial,
  * nunca digitados à mão, pra manter consistência com o que será enviado à
  * Focus na hora de emitir.
  */

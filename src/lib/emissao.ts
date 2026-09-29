@@ -29,7 +29,7 @@ interface EmitirNotaParaEmpresaParams {
 
 /**
  * Cria a Nota, chama a Focus NFe e grava o resultado. Usada tanto pela emissão
- * avulsa (formulário) quanto pelo cron de notas recorrentes — mantém a mesma
+ * avulsa (formulário) quanto pelo cron de notas recorrentes - mantém a mesma
  * lógica de payload/erro nos dois fluxos.
  */
 export async function emitirNotaParaEmpresa({
@@ -100,7 +100,7 @@ export async function emitirNotaParaEmpresa({
     });
   } catch (err) {
     // Corrida entre dois cliques quase simultâneos: a constraint única do
-    // banco pegou o que a checagem em memória não pegou a tempo — a nota já
+    // banco pegou o que a checagem em memória não pegou a tempo - a nota já
     // existe, então devolvemos ela em vez de emitir (e cobrar) duas vezes.
     if (
       idempotencyKey &&
@@ -226,7 +226,7 @@ function montarPayloadNfseClassica(
 
 /**
  * Emissão via NFS-e Nacional (DPS), obrigatória para empresas MEI. Reserva um
- * número sequencial de DPS atômico (série fixa 1) antes de montar o payload —
+ * número sequencial de DPS atômico (série fixa 1) antes de montar o payload -
  * a numeração é nossa responsabilidade, a Focus não gera isso por nós.
  */
 async function emitirViaNfseNacional(
@@ -272,7 +272,7 @@ async function emitirViaNfseNacional(
 }
 
 /**
- * Cancela uma Nota já autorizada. Só faz sentido pra notas AUTORIZADA — pedir
+ * Cancela uma Nota já autorizada. Só faz sentido pra notas AUTORIZADA - pedir
  * cancelamento de uma nota em erro ou já cancelada não tem efeito na Focus e
  * só confundiria o histórico, então quem chama isso já deve ter checado o status.
  */
