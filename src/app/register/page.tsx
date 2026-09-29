@@ -61,6 +61,31 @@ export default function RegisterPage() {
             />
           </div>
 
+          <div className="flex items-start gap-2">
+            <input
+              id="aceitouTermos"
+              name="aceitouTermos"
+              type="checkbox"
+              required
+              className="mt-0.5"
+            />
+            <label htmlFor="aceitouTermos" className="text-xs text-gray-600">
+              Li e concordo com os{" "}
+              <Link href="/termos" target="_blank" className="text-brand-brown hover:underline">
+                Termos de Uso
+              </Link>{" "}
+              e a{" "}
+              <Link
+                href="/privacidade"
+                target="_blank"
+                className="text-brand-brown hover:underline"
+              >
+                Política de Privacidade
+              </Link>
+              .
+            </label>
+          </div>
+
           {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
           <button

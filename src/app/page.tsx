@@ -23,6 +23,16 @@ export default function Home() {
           Entrar
         </Link>
       </div>
+
+      <p className="mt-10 text-xs text-gray-400">
+        <Link href="/termos" className="hover:underline">
+          Termos de Uso
+        </Link>{" "}
+        ·{" "}
+        <Link href="/privacidade" className="hover:underline">
+          Política de Privacidade
+        </Link>
+      </p>
     </main>
   );
 }

@@ -15,9 +15,14 @@ export async function registerUser(
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const aceitouTermos = formData.get("aceitouTermos") === "on";
 
   if (!name || !email || !password) {
     return { error: "Preencha todos os campos." };
+  }
+
+  if (!aceitouTermos) {
+    return { error: "Você precisa aceitar os Termos de Uso e a Política de Privacidade." };
   }
 
   if (password.length < 8) {
