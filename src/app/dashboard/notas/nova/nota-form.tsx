@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { emitirNota, type NotaState } from "../actions";
 import { SeletorCodigoTributacao } from "@/components/seletor-codigo-tributacao";
 import { buscarCodigoTributacaoNacional } from "@/lib/codigoTributacaoNacional";
+import { buscarNbsPorItem } from "@/lib/nbs";
 
 interface Servico {
   id: string;
@@ -57,7 +58,13 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const [codigoTributacaoNacionalIss, setCodigoTributacaoNacionalIss] = useState("");
   const [itemListaServico, setItemListaServico] = useState("");
   const [codigoNbs, setCodigoNbs] = useState("");
+  const [nbsManual, setNbsManual] = useState(false);
   const [mostrarOpcoesFiscais, setMostrarOpcoesFiscais] = useState(false);
+
+  const nbsCorrelacionados = useMemo(
+    () => buscarNbsPorItem(itemListaServico.slice(0, 4)),
+    [itemListaServico],
+  );
 
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
@@ -235,7 +242,15 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                     })()}
                   </p>
                 )}
-                {codigoNbs && <p className="text-gray-900">Código NBS: {codigoNbs}</p>}
+                {codigoNbs && (
+                  <p className="text-gray-900">
+                    Código NBS: {codigoNbs}
+                    {(() => {
+                      const item = nbsCorrelacionados.find((n) => n.nbs === codigoNbs);
+                      return item ? ` — ${item.descricao}` : "";
+                    })()}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -455,16 +470,61 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Código NBS</label>
-                  <input
-                    value={codigoNbs}
-                    onChange={(e) => setCodigoNbs(e.target.value)}
-                    placeholder="ex: 1.1301.30.00"
-                    className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Opcional — usado em alguns casos de exportação de serviços ou exigência
-                    municipal específica. Deixe em branco se não souber.
-                  </p>
+                  {nbsCorrelacionados.length > 0 && !nbsManual ? (
+                    <>
+                      <select
+                        value={codigoNbs}
+                        onChange={(e) => {
+                          if (e.target.value === "__manual__") {
+                            setNbsManual(true);
+                            setCodigoNbs("");
+                          } else {
+                            setCodigoNbs(e.target.value);
+                          }
+                        }}
+                        className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                      >
+                        <option value="">Nenhum</option>
+                        {nbsCorrelacionados.map((item) => (
+                          <option key={item.nbs} value={item.nbs}>
+                            {item.nbs} — {item.descricao}
+                          </option>
+                        ))}
+                        <option value="__manual__">Outro (digitar manualmente)</option>
+                      </select>
+                      <p className="mt-1 text-xs text-gray-500">
+                        Opções pré-filtradas pela correlação oficial com o item de serviço
+                        escolhido acima. Opcional — deixe "Nenhum" se não souber.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        value={codigoNbs}
+                        onChange={(e) => setCodigoNbs(e.target.value)}
+                        placeholder="ex: 1.1301.30.00"
+                        className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        {itemListaServico
+                          ? "Não há NBS pré-cadastrado pra este item — digite manualmente se souber."
+                          : "Escolha o item da lista de serviços acima pra ver as opções de NBS correlacionadas."}{" "}
+                        Opcional — deixe em branco se não souber.
+                      </p>
+                      {nbsManual && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNbsManual(false);
+                            setCodigoNbs("");
+                          }}
+                          className="mt-1 text-xs font-medium text-brand-brown hover:underline"
+                        >
+                          ← Voltar pras opções sugeridas
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
               </>
             )}
