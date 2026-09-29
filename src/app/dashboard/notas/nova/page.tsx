@@ -25,7 +25,14 @@ export default async function NovaNotaPage({
   const servicos = await prisma.servico.findMany({
     where: { empresaId: empresa.id, ativo: true },
     orderBy: { nome: "asc" },
-    select: { id: true, nome: true, descricao: true, valor: true },
+    select: {
+      id: true,
+      nome: true,
+      descricao: true,
+      valor: true,
+      codigoTributacaoNacional: true,
+      codigoNbs: true,
+    },
   });
 
   const { clienteId, descricao, valor } = await searchParams;

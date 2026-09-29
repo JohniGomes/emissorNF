@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { CancelarNotaButton } from "./cancelar-nota-button";
+import { DetalhesFiscais } from "./detalhes-fiscais";
 
 const statusLabel: Record<string, string> = {
   PENDENTE: "Pendente",
@@ -227,6 +228,7 @@ export default async function NotasPage({
                         {nota.erro && (
                           <p className="mt-1 text-xs text-red-600">{nota.erro}</p>
                         )}
+                        <DetalhesFiscais respostaApi={nota.respostaApi} />
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-500">
                         {nota.linkPdf ? (

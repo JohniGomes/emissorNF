@@ -21,7 +21,13 @@ export default async function NovaRecorrentePage() {
   const servicos = await prisma.servico.findMany({
     where: { empresaId: empresa.id, ativo: true },
     orderBy: { nome: "asc" },
-    select: { id: true, nome: true, descricao: true, valor: true },
+    select: {
+      id: true,
+      nome: true,
+      descricao: true,
+      valor: true,
+      codigoTributacaoNacional: true,
+    },
   });
 
   return (

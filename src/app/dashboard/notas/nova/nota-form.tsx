@@ -12,6 +12,8 @@ interface Servico {
   nome: string;
   descricao: string;
   valor: number;
+  codigoTributacaoNacional?: string | null;
+  codigoNbs?: string | null;
 }
 
 interface NotaFormProps {
@@ -116,6 +118,11 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
     if (servico) {
       setDescricaoServico(servico.descricao);
       if (servico.valor > 0) setValor(servico.valor.toFixed(2).replace(".", ","));
+      if (servico.codigoTributacaoNacional) {
+        if (ehMei) setCodigoTributacaoNacionalIss(servico.codigoTributacaoNacional);
+        else setItemListaServico(servico.codigoTributacaoNacional);
+      }
+      setCodigoNbs(servico.codigoNbs ?? "");
     }
   }
 

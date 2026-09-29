@@ -31,9 +31,9 @@ export default async function ServicosPage() {
       </div>
 
       <p className="mb-4 text-sm text-gray-500">
-        Cadastre os serviços que você presta pra selecionar rapidamente na hora de
-        emitir uma nota — descrição e valor padrão preenchem sozinhos, e você
-        ainda pode ajustar antes de emitir.
+        Cadastre os serviços que você presta pelo código de tributação nacional —
+        descrição e NBS vêm da tabela oficial — pra selecionar rapidamente na hora
+        de emitir uma nota.
       </p>
 
       {servicos.length === 0 ? (
@@ -44,10 +44,13 @@ export default async function ServicosPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Nome
+                  Descrição
                 </th>
                 <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                  Descrição padrão
+                  Código nacional
+                </th>
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  NBS
                 </th>
                 <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                   Valor padrão
@@ -63,8 +66,11 @@ export default async function ServicosPage() {
             <tbody className="divide-y divide-gray-200">
               {servicos.map((s) => (
                 <tr key={s.id}>
-                  <td className="px-4 py-2 text-sm text-gray-900">{s.nome}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">{s.descricao}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{s.descricao}</td>
+                  <td className="px-4 py-2 text-sm text-gray-500">
+                    {s.codigoTributacaoNacional || "—"}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-500">{s.codigoNbs || "—"}</td>
                   <td className="px-4 py-2 text-sm text-gray-500">
                     {Number(s.valor).toLocaleString("pt-BR", {
                       style: "currency",

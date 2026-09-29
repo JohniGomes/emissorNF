@@ -32,6 +32,8 @@ export default async function EditarServicoPage({
           nome: servico.nome,
           descricao: servico.descricao,
           valor: Number(servico.valor),
+          codigoTributacaoNacional: servico.codigoTributacaoNacional,
+          codigoNbs: servico.codigoNbs,
         }}
         textoBotao="Salvar alterações"
       />

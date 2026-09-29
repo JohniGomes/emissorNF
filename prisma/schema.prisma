@@ -231,6 +231,12 @@ model Servico {
   valor     Decimal @db.Decimal(12, 2)
   ativo     Boolean @default(true)
 
+  // Código de tributação nacional (cTribNac, mesma tabela oficial usada na
+  // emissão) e código NBS correlacionado — cadastrados uma vez aqui pra não
+  // precisar escolher de novo em cada nota que usar este serviço.
+  codigoTributacaoNacional String?
+  codigoNbs                String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

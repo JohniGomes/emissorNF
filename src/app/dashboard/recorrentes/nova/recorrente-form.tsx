@@ -10,6 +10,7 @@ interface Servico {
   nome: string;
   descricao: string;
   valor: number;
+  codigoTributacaoNacional?: string | null;
 }
 
 interface RecorrenteFormProps {
@@ -37,6 +38,9 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
     if (servico) {
       setDescricaoServico(servico.descricao);
       if (servico.valor > 0) setValor(servico.valor.toFixed(2).replace(".", ","));
+      if (servico.codigoTributacaoNacional && ehMei) {
+        setCodigoTributacaoNacionalIss(servico.codigoTributacaoNacional);
+      }
     }
   }
 
