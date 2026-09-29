@@ -21,7 +21,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
             name="nome"
             required
             defaultValue={cliente.nome}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -31,7 +31,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
             name="documento"
             required
             defaultValue={cliente.documento}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -41,7 +41,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
             name="email"
             type="email"
             defaultValue={cliente.email ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -50,7 +50,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="logradouro"
             defaultValue={cliente.logradouro ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -59,7 +59,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="numero"
             defaultValue={cliente.numero ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -68,7 +68,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="bairro"
             defaultValue={cliente.bairro ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -77,7 +77,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="municipio"
             defaultValue={cliente.municipio ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -87,7 +87,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
             name="uf"
             maxLength={2}
             defaultValue={cliente.uf ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm uppercase"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm uppercase"
           />
         </div>
 
@@ -96,7 +96,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           <input
             name="cep"
             defaultValue={cliente.cep ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
       </div>

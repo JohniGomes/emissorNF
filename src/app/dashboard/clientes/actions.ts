@@ -5,9 +5,35 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { registrarLog } from "@/lib/auditoria";
+import { buscarDadosCnpj, type DadosCnpj } from "@/lib/cnpj";
 
 export interface ClienteState {
   error?: string;
+}
+
+export interface BuscarCnpjClienteState {
+  error?: string;
+  dados?: DadosCnpj;
+}
+
+export async function buscarCnpjClienteAction(
+  _prevState: BuscarCnpjClienteState,
+  formData: FormData,
+): Promise<BuscarCnpjClienteState> {
+  const documento = formData.get("documento") as string;
+
+  if (!documento) {
+    return { error: "Informe um CNPJ." };
+  }
+
+  try {
+    const dados = await buscarDadosCnpj(documento);
+    return { dados };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Não foi possível buscar o CNPJ.",
+    };
+  }
 }
 
 export async function criarCliente(

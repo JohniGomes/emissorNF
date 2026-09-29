@@ -69,7 +69,7 @@ export default async function ClientesPage({
           name="busca"
           defaultValue={busca ?? ""}
           placeholder="Buscar por nome ou CPF/CNPJ"
-          className="w-full max-w-sm rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="w-full max-w-sm rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <button
           type="submit"

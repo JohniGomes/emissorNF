@@ -20,7 +20,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
         <select
           name="clienteId"
           required
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         >
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
@@ -39,7 +39,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
           name="descricaoServico"
           required
           rows={3}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
       </div>
 
@@ -51,7 +51,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
             required
             inputMode="decimal"
             placeholder="0,00"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -64,7 +64,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
             max={31}
             required
             placeholder="ex: 5"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
       </div>
@@ -78,7 +78,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
           type="number"
           min={1}
           placeholder="Deixe em branco para repetir sem prazo definido"
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
           Ex: 12 para emitir todo mês pelos próximos 12 meses e desativar
@@ -96,7 +96,7 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
             name="codigoTributacaoNacionalIss"
             required
             placeholder="ex: 010701"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
           <p className="mt-1 text-xs text-gray-500">
             Exigido pela NFS-e Nacional em toda emissão para empresas MEI.

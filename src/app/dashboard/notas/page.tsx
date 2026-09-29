@@ -110,7 +110,7 @@ export default async function NotasPage({
             name="cliente"
             defaultValue={cliente ?? ""}
             placeholder="Buscar por nome"
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           />
         </div>
         <div>
@@ -118,7 +118,7 @@ export default async function NotasPage({
           <select
             name="status"
             defaultValue={status ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           >
             <option value="">Todos</option>
             {Object.entries(statusLabel).map(([value, label]) => (
@@ -134,7 +134,7 @@ export default async function NotasPage({
             type="date"
             name="de"
             defaultValue={de ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           />
         </div>
         <div>
@@ -143,7 +143,7 @@ export default async function NotasPage({
             type="date"
             name="ate"
             defaultValue={ate ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm"
           />
         </div>
         <div className="col-span-2 flex items-end gap-2 sm:col-span-4">

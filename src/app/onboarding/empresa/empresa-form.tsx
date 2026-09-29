@@ -105,7 +105,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             value={cnpj}
             onChange={(e) => setCnpj(e.target.value)}
             placeholder="00.000.000/0000-00"
-            className={`w-full rounded-md border border-gray-300 px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
+            className={`w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm ${jaExiste ? "bg-gray-100" : ""}`}
           />
           {!jaExiste && (
             <button
@@ -138,7 +138,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             required
             value={razaoSocial}
             onChange={(e) => setRazaoSocial(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -150,7 +150,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="nomeFantasia"
             value={nomeFantasia}
             onChange={(e) => setNomeFantasia(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -160,7 +160,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="telefone"
             value={telefone}
             onChange={(e) => setTelefone(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -170,7 +170,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="celular"
             value={celular}
             onChange={(e) => setCelular(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
       </div>
@@ -187,7 +187,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="cep"
             value={cep}
             onChange={(e) => setCep(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -197,7 +197,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="logradouro"
             value={logradouro}
             onChange={(e) => setLogradouro(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -207,7 +207,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="numero"
             value={numero}
             onChange={(e) => setNumero(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -219,7 +219,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="complemento"
             value={complemento}
             onChange={(e) => setComplemento(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -229,7 +229,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="bairro"
             value={bairro}
             onChange={(e) => setBairro(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -240,7 +240,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             required
             value={municipio}
             onChange={(e) => setMunicipio(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -252,7 +252,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             maxLength={2}
             value={uf}
             onChange={(e) => setUf(e.target.value.toUpperCase())}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm uppercase"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm uppercase"
           />
         </div>
 
@@ -271,7 +271,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             required
             value={regimeTributario}
             onChange={(e) => setRegimeTributario(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           >
             <option value="">Selecione</option>
             <option value="MEI">MEI</option>
@@ -289,7 +289,7 @@ export function OnboardingEmpresaForm({ defaultValues }: OnboardingEmpresaFormPr
             name="inscricaoMunicipal"
             value={inscricaoMunicipal}
             onChange={(e) => setInscricaoMunicipal(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
       </div>

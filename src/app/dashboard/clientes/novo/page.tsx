@@ -1,12 +1,56 @@
 "use client";
 
-import { useActionState } from "react";
-import { criarCliente, type ClienteState } from "../actions";
+import { useActionState, useState } from "react";
+import {
+  criarCliente,
+  buscarCnpjClienteAction,
+  type ClienteState,
+  type BuscarCnpjClienteState,
+} from "../actions";
 
 const initialState: ClienteState = {};
+const initialBuscaState: BuscarCnpjClienteState = {};
 
 export default function NovoClientePage() {
   const [state, formAction, pending] = useActionState(criarCliente, initialState);
+
+  const [documento, setDocumento] = useState("");
+  const [nome, setNome] = useState("");
+  const [logradouro, setLogradouro] = useState("");
+  const [numero, setNumero] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [municipio, setMunicipio] = useState("");
+  const [uf, setUf] = useState("");
+  const [cep, setCep] = useState("");
+
+  const [buscaState, setBuscaState] = useState<BuscarCnpjClienteState>(initialBuscaState);
+  const [buscando, setBuscando] = useState(false);
+
+  const somenteDigitos = documento.replace(/\D/g, "");
+  const pareceCnpj = somenteDigitos.length === 14;
+  const pareceCpf = somenteDigitos.length === 11;
+
+  async function handleBuscarCnpj() {
+    setBuscando(true);
+    setBuscaState(initialBuscaState);
+
+    const formData = new FormData();
+    formData.set("documento", documento);
+    const resultado = await buscarCnpjClienteAction(initialBuscaState, formData);
+    setBuscaState(resultado);
+    setBuscando(false);
+
+    if (resultado.dados) {
+      const d = resultado.dados;
+      setNome(d.razaoSocial);
+      setLogradouro(d.logradouro ?? "");
+      setNumero(d.numero ?? "");
+      setBairro(d.bairro ?? "");
+      setMunicipio(d.municipio ?? "");
+      setUf(d.uf ?? "");
+      setCep(d.cep ?? "");
+    }
+  }
 
   return (
     <div>
@@ -14,22 +58,41 @@ export default function NovoClientePage() {
 
       <form action={formAction} className="max-w-xl space-y-4">
         <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-700">Nome *</label>
-            <input
-              name="nome"
-              required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">CPF/CNPJ *</label>
-            <input
-              name="documento"
-              required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
-            />
+            <div className="mt-1 flex gap-2">
+              <input
+                name="documento"
+                required
+                value={documento}
+                onChange={(e) => setDocumento(e.target.value)}
+                placeholder="Só números"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+              />
+              {pareceCnpj && (
+                <button
+                  type="button"
+                  onClick={handleBuscarCnpj}
+                  disabled={buscando}
+                  className="whitespace-nowrap rounded-md border border-brand-tan bg-brand-cream px-3 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream disabled:opacity-50"
+                >
+                  {buscando ? "Buscando..." : "Buscar dados"}
+                </button>
+              )}
+            </div>
+            {buscaState.error && (
+              <p className="mt-1 text-sm text-red-600">{buscaState.error}</p>
+            )}
+            {buscaState.dados && (
+              <p className="mt-1 text-sm text-green-600">
+                Dados encontrados! Confira e complete abaixo.
+              </p>
+            )}
+            {pareceCpf && (
+              <p className="mt-1 text-xs text-gray-500">
+                Não é possível autopreencher dados a partir de CPF — preencha manualmente.
+              </p>
+            )}
           </div>
 
           <div>
@@ -37,7 +100,18 @@ export default function NovoClientePage() {
             <input
               name="email"
               type="email"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="col-span-2">
+            <label className="block text-sm font-medium text-gray-700">Nome *</label>
+            <input
+              name="nome"
+              required
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
 
@@ -45,7 +119,9 @@ export default function NovoClientePage() {
             <label className="block text-sm font-medium text-gray-700">Logradouro</label>
             <input
               name="logradouro"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              value={logradouro}
+              onChange={(e) => setLogradouro(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
 
@@ -53,7 +129,9 @@ export default function NovoClientePage() {
             <label className="block text-sm font-medium text-gray-700">Número</label>
             <input
               name="numero"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              value={numero}
+              onChange={(e) => setNumero(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
 
@@ -61,7 +139,9 @@ export default function NovoClientePage() {
             <label className="block text-sm font-medium text-gray-700">Bairro</label>
             <input
               name="bairro"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              value={bairro}
+              onChange={(e) => setBairro(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
 
@@ -69,7 +149,9 @@ export default function NovoClientePage() {
             <label className="block text-sm font-medium text-gray-700">Município</label>
             <input
               name="municipio"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              value={municipio}
+              onChange={(e) => setMunicipio(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
 
@@ -78,7 +160,9 @@ export default function NovoClientePage() {
             <input
               name="uf"
               maxLength={2}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm uppercase"
+              value={uf}
+              onChange={(e) => setUf(e.target.value.toUpperCase())}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm uppercase"
             />
           </div>
 
@@ -86,7 +170,9 @@ export default function NovoClientePage() {
             <label className="block text-sm font-medium text-gray-700">CEP</label>
             <input
               name="cep"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              value={cep}
+              onChange={(e) => setCep(e.target.value)}
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
         </div>

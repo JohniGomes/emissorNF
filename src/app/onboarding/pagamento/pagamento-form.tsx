@@ -53,7 +53,7 @@ export function PagamentoForm({ ciclo }: PagamentoFormProps) {
             <input
               required
               placeholder="0000 0000 0000 0000"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -62,7 +62,7 @@ export function PagamentoForm({ ciclo }: PagamentoFormProps) {
             </label>
             <input
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -73,7 +73,7 @@ export function PagamentoForm({ ciclo }: PagamentoFormProps) {
               <input
                 required
                 placeholder="MM/AAAA"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -83,7 +83,7 @@ export function PagamentoForm({ ciclo }: PagamentoFormProps) {
               <input
                 required
                 placeholder="CVV"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
               />
             </div>
           </div>

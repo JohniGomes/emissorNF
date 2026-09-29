@@ -35,7 +35,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
           required
           value={clienteId}
           onChange={(e) => setClienteId(e.target.value)}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         >
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
@@ -57,7 +57,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
             <input
               name="clienteManualNome"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -65,7 +65,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
             <input
               name="clienteManualDocumento"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
           <div>
@@ -73,7 +73,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
             <input
               name="clienteManualEmail"
               type="email"
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
             />
           </div>
         </div>
@@ -88,7 +88,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
           required
           rows={3}
           defaultValue={defaultValues?.descricaoServico}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
       </div>
 
@@ -100,7 +100,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
           inputMode="decimal"
           placeholder="0,00"
           defaultValue={defaultValues?.valor}
-          className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
       </div>
 
@@ -113,7 +113,7 @@ export function NotaForm({ clientes, ehMei, defaultValues }: NotaFormProps) {
             name="codigoTributacaoNacionalIss"
             required
             placeholder="ex: 010701"
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
           <p className="mt-1 text-xs text-gray-500">
             Exigido pela NFS-e Nacional para empresas MEI. Consulte a tabela oficial

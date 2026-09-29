@@ -30,7 +30,7 @@ export default function RegisterPage() {
               name="name"
               type="text"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -43,7 +43,7 @@ export default function RegisterPage() {
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -57,7 +57,7 @@ export default function RegisterPage() {
               type="password"
               required
               minLength={8}
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 

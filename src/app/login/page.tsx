@@ -63,7 +63,7 @@ function LoginForm() {
               name="email"
               type="email"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
@@ -76,7 +76,7 @@ function LoginForm() {
               name="password"
               type="password"
               required
-              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
+              className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-brand-tan focus:outline-none"
             />
           </div>
 
