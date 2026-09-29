@@ -60,7 +60,6 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const [itemListaServico, setItemListaServico] = useState("");
   const [codigoNbs, setCodigoNbs] = useState("");
   const [nbsManual, setNbsManual] = useState(false);
-  const [mostrarOpcoesFiscais, setMostrarOpcoesFiscais] = useState(false);
 
   const nbsCorrelacionados = useMemo(
     () => buscarNbsPorItem(itemListaServico.slice(0, 4)),
@@ -146,7 +145,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
   const nomeClienteRevisao = clienteManualSelecionado
     ? clienteManualNome
     : clienteSelecionado
-      ? `${clienteSelecionado.nome} - ${clienteSelecionado.documento}`
+      ? `${clienteSelecionado.nome} (${clienteSelecionado.documento})`
       : "";
 
   if (etapa === "revisao") {
@@ -189,7 +188,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           <div className="border-b border-gray-100 p-4">
             <h2 className="text-sm font-semibold text-gray-900">Revisão da nota</h2>
             <p className="mt-1 text-xs text-gray-500">
-              Confira os dados antes de emitir - depois de emitida a nota não pode ser editada.
+              Confira os dados antes de emitir. Depois de emitida a nota não pode ser editada.
             </p>
           </div>
 
@@ -241,7 +240,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                   Código de tributação nacional do ISS: {codigoTributacaoNacionalIss}
                   {(() => {
                     const item = buscarCodigoTributacaoNacional(codigoTributacaoNacionalIss, 1)[0];
-                    return item ? ` - ${item.descricao}` : "";
+                    return item ? ` (${item.descricao})` : "";
                   })()}
                 </p>
               </div>
@@ -257,7 +256,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                       itemListaServico}
                     {(() => {
                       const item = buscarCodigoTributacaoNacional(itemListaServico, 1)[0];
-                      return item ? ` - ${item.descricao}` : "";
+                      return item ? ` (${item.descricao})` : "";
                     })()}
                   </p>
                 )}
@@ -266,7 +265,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                     Código NBS: {codigoNbs}
                     {(() => {
                       const item = nbsCorrelacionados.find((n) => n.nbs === codigoNbs);
-                      return item ? ` - ${item.descricao}` : "";
+                      return item ? ` (${item.descricao})` : "";
                     })()}
                   </p>
                 )}
@@ -310,7 +309,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
             <option key={cliente.id} value={cliente.id}>
-              {cliente.nome} - {cliente.documento}
+              {cliente.nome} ({cliente.documento})
             </option>
           ))}
           <option value={CLIENTE_MANUAL}>Cliente não cadastrado (inserir dados)</option>
@@ -373,7 +372,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            Preenche a descrição e o valor automaticamente - você pode ajustar antes de emitir.
+            Preenche a descrição e o valor automaticamente. Você pode ajustar antes de emitir.
           </p>
         </div>
       )}
@@ -425,22 +424,12 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
           onChange={(e) => setDataCompetencia(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
-        <p className="mt-1 text-xs text-gray-500">
-          Mês/competência a que o serviço se refere - pode ser diferente da data de emissão.
-        </p>
       </div>
 
       <div>
-        <button
-          type="button"
-          onClick={() => setMostrarOpcoesFiscais((v) => !v)}
-          className="text-sm font-medium text-brand-brown hover:underline"
-        >
-          {mostrarOpcoesFiscais ? "▾" : "▸"} ⚙️ Opções fiscais avançadas
-        </button>
+        <h3 className="text-sm font-medium text-gray-700">⚙️ Opções fiscais avançadas</h3>
 
-        {mostrarOpcoesFiscais && (
-          <div className="mt-3 space-y-3 rounded-md border border-dashed border-gray-300 p-3">
+        <div className="mt-3 space-y-3 rounded-md border border-dashed border-gray-300 p-3">
             <div>
               <label className="block text-sm font-medium text-gray-700">Observações</label>
               <textarea
@@ -466,7 +455,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                     <option value="">Selecione</option>
                     {codigosCadastrados.map((item) => (
                       <option key={item.codigo} value={item.codigo}>
-                        {item.codigo} - {item.descricao}
+                        {item.codigo} ({item.descricao})
                       </option>
                     ))}
                   </select>
@@ -494,7 +483,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Item da lista de serviços (LC 116/2003)
+                    Selecione um serviço cadastrado
                   </label>
                   {codigosCadastrados.length > 0 ? (
                     <select
@@ -503,14 +492,11 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                       className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
                     >
                       <option value="">Selecione</option>
-                      {codigosCadastrados.map((item) => {
-                        const info = buscarCodigoTributacaoNacional(item.codigo, 1)[0];
-                        return (
-                          <option key={item.codigo} value={item.codigo}>
-                            {info?.codigoFormatado ?? item.codigo} - {item.descricao}
-                          </option>
-                        );
-                      })}
+                      {codigosCadastrados.map((item) => (
+                        <option key={item.codigo} value={item.codigo}>
+                          {item.descricao}
+                        </option>
+                      ))}
                     </select>
                   ) : (
                     <p className="mt-1 text-xs text-gray-500">
@@ -527,7 +513,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                   )}
                   <p className="mt-1 text-xs text-gray-500">
                     Alguns municípios exigem esse código pra autorizar a nota. Só mostra os
-                    códigos já cadastrados em Meus Serviços - deixe em branco se seu
+                    códigos já cadastrados em Meus Serviços; deixe em branco se seu
                     município não exigir.
                   </p>
                 </div>
@@ -550,14 +536,14 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                         <option value="">Nenhum</option>
                         {nbsCorrelacionados.map((item) => (
                           <option key={item.nbs} value={item.nbs}>
-                            {item.nbs} - {item.descricao}
+                            {item.nbs} ({item.descricao})
                           </option>
                         ))}
                         <option value="__manual__">Outro (digitar manualmente)</option>
                       </select>
                       <p className="mt-1 text-xs text-gray-500">
                         Opções pré-filtradas pela correlação oficial com o item de serviço
-                        escolhido acima. Opcional - deixe "Nenhum" se não souber.
+                        escolhido acima. Opcional, deixe "Nenhum" se não souber.
                       </p>
                     </>
                   ) : (
@@ -570,9 +556,9 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                       />
                       <p className="mt-1 text-xs text-gray-500">
                         {itemListaServico
-                          ? "Não há NBS pré-cadastrado pra este item - digite manualmente se souber."
+                          ? "Não há NBS pré-cadastrado pra este item. Digite manualmente se souber."
                           : "Escolha o item da lista de serviços acima pra ver as opções de NBS correlacionadas."}{" "}
-                        Opcional - deixe em branco se não souber.
+                        Opcional, deixe em branco se não souber.
                       </p>
                       {nbsManual && (
                         <button
@@ -591,8 +577,7 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 </div>
               </>
             )}
-          </div>
-        )}
+        </div>
       </div>
 
       {erroValidacao && <p className="text-sm text-amber-600">{erroValidacao}</p>}

@@ -133,7 +133,7 @@ export default function NovoClientePage() {
             )}
             {pareceCpf && (
               <p className="mt-1 text-xs text-gray-500">
-                Não é possível autopreencher dados a partir de CPF - preencha manualmente.
+                Não é possível autopreencher dados a partir de CPF. Preencha manualmente.
               </p>
             )}
           </div>
@@ -303,7 +303,7 @@ export default function NovoClientePage() {
                 />
               </div>
               <p className="col-span-2 text-xs text-gray-500">
-                Só necessário em municípios/regimes específicos - deixe em branco se não souber.
+                Só necessário em municípios/regimes específicos, deixe em branco se não souber.
               </p>
             </div>
           )}

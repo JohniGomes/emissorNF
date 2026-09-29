@@ -56,7 +56,7 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
           <option value="">Selecione o cliente</option>
           {clientes.map((cliente) => (
             <option key={cliente.id} value={cliente.id}>
-              {cliente.nome} - {cliente.documento}
+              {cliente.nome} ({cliente.documento})
             </option>
           ))}
         </select>
@@ -79,7 +79,7 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
           </select>
           <input type="hidden" name="servicoId" value={servicoId} />
           <p className="mt-1 text-xs text-gray-500">
-            Preenche a descrição e o valor automaticamente - você pode ajustar antes de salvar.
+            Preenche a descrição e o valor automaticamente. Você pode ajustar antes de salvar.
           </p>
         </div>
       )}
@@ -151,7 +151,7 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
-          Opcional - só pra referência. A emissão de fato ocorre todo mês no
+          Opcional, só pra referência. A emissão de fato ocorre todo mês no
           dia escolhido acima.
         </p>
       </div>

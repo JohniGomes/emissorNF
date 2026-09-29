@@ -64,7 +64,7 @@ export default async function DashboardPage() {
       : []),
     ...notasComErro.map((nota) => ({
       id: nota.id,
-      titulo: `Nota rejeitada - ${nota.descricaoServico}`,
+      titulo: `Nota rejeitada: ${nota.descricaoServico}`,
       descricao: nota.erro || "A emissão retornou um erro. Revise os dados e tente novamente.",
       href: "/dashboard/notas",
     })),

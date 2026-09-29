@@ -23,7 +23,7 @@ const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNorm
     regex: /codigo_municipio|código do município|codigo_municipio_prestacao|codigo_municipio_emissora/i,
     normalizar: () => ({
       mensagem: "Faltou o código do município (IBGE) para autorizar a nota.",
-      dica: 'Confira o "Código IBGE do município" em "Sua empresa" - ou, se o problema for do cliente, o município cadastrado nele.',
+      dica: 'Confira o "Código IBGE do município" em "Sua empresa"; ou, se o problema for do cliente, o município cadastrado nele.',
     }),
   },
   {
@@ -52,6 +52,13 @@ const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNorm
     normalizar: () => ({
       mensagem: "O código de tributação nacional do ISS informado não é válido para esse serviço.",
       dica: "Confira o código na tabela oficial da NFS-e Nacional ou com seu contador.",
+    }),
+  },
+  {
+    regex: /access token/i,
+    normalizar: () => ({
+      mensagem: "O acesso ao provedor fiscal da sua empresa não foi reconhecido.",
+      dica: 'Vá em "Sua empresa" e confirme se o cadastro fiscal está completo; se o problema continuar, fale com o suporte.',
     }),
   },
 ];

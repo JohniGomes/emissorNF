@@ -123,7 +123,7 @@ export default async function ClientesPage({
                   <tr key={cliente.id}>
                     <td className="px-4 py-2 text-sm text-gray-900">{cliente.nome}</td>
                     <td className="px-4 py-2 text-sm text-gray-500">{cliente.documento}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">{cliente.email ?? "-"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{cliente.email ?? ""}</td>
                     <td className="px-4 py-2 text-sm text-gray-500">{cliente._count.notas}</td>
                     <td className="px-4 py-2 text-sm space-x-3">
                       <Link

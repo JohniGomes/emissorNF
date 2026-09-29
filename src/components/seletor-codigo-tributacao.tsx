@@ -10,7 +10,7 @@ interface SeletorCodigoTributacaoProps {
   /** Código já selecionado (formato sem pontos, ex: "170101"). */
   value: string;
   onChange: (codigo: string) => void;
-  /** "nacional" mostra 170101, "lc116" mostra 17.01.01 - mesma tabela, formatos diferentes. */
+  /** "nacional" mostra 170101, "lc116" mostra 17.01.01 (mesma tabela, formatos diferentes). */
   formato?: "nacional" | "lc116";
   placeholder?: string;
 }
@@ -51,7 +51,7 @@ export function SeletorCodigoTributacao({
         >
           <span>
             <span className="font-medium text-gray-900">{exibirCodigo(selecionado)}</span>{" "}
-            <span className="text-gray-600">- {selecionado.descricao}</span>
+            <span className="text-gray-600">({selecionado.descricao})</span>
           </span>
           <span className="shrink-0 text-xs text-brand-brown">trocar</span>
         </button>
@@ -77,7 +77,7 @@ export function SeletorCodigoTributacao({
                     className="block w-full border-b border-gray-100 px-3 py-2 text-left text-sm last:border-0 hover:bg-brand-cream"
                   >
                     <span className="font-medium text-gray-900">{exibirCodigo(item)}</span>{" "}
-                    <span className="text-gray-600">- {item.descricao}</span>
+                    <span className="text-gray-600">({item.descricao})</span>
                   </button>
                 ))
               )}
