@@ -1,17 +1,42 @@
 "use client";
 
+import { useState } from "react";
 import { useActionState } from "react";
 import { criarRecorrente, type RecorrenteState } from "../actions";
 
+interface Servico {
+  id: string;
+  nome: string;
+  descricao: string;
+  valor: number;
+}
+
 interface RecorrenteFormProps {
   clientes: { id: string; nome: string; documento: string }[];
+  servicos: Servico[];
   ehMei: boolean;
 }
 
 const initialState: RecorrenteState = {};
 
-export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
+type DuracaoOpcao = "12" | "24" | "indefinidamente";
+
+export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProps) {
   const [state, formAction, pending] = useActionState(criarRecorrente, initialState);
+
+  const [servicoId, setServicoId] = useState("");
+  const [descricaoServico, setDescricaoServico] = useState("");
+  const [valor, setValor] = useState("");
+  const [duracao, setDuracao] = useState<DuracaoOpcao>("indefinidamente");
+
+  function handleSelecionarServico(id: string) {
+    setServicoId(id);
+    const servico = servicos.find((s) => s.id === id);
+    if (servico) {
+      setDescricaoServico(servico.descricao);
+      if (servico.valor > 0) setValor(servico.valor.toFixed(2).replace(".", ","));
+    }
+  }
 
   return (
     <form action={formAction} className="max-w-lg space-y-4">
@@ -31,6 +56,28 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
         </select>
       </div>
 
+      {servicos.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Serviço</label>
+          <select
+            value={servicoId}
+            onChange={(e) => handleSelecionarServico(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          >
+            <option value="">Digitar manualmente</option>
+            {servicos.map((servico) => (
+              <option key={servico.id} value={servico.id}>
+                {servico.nome}
+              </option>
+            ))}
+          </select>
+          <input type="hidden" name="servicoId" value={servicoId} />
+          <p className="mt-1 text-xs text-gray-500">
+            Preenche a descrição e o valor automaticamente — você pode ajustar antes de salvar.
+          </p>
+        </div>
+      )}
+
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Descrição do serviço *
@@ -39,6 +86,8 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
           name="descricaoServico"
           required
           rows={3}
+          value={descricaoServico}
+          onChange={(e) => setDescricaoServico(e.target.value)}
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
       </div>
@@ -51,12 +100,14 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
             required
             inputMode="decimal"
             placeholder="0,00"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Dia do mês *</label>
+          <label className="block text-sm font-medium text-gray-700">Dia da emissão *</label>
           <input
             name="diaDoMes"
             type="number"
@@ -70,20 +121,56 @@ export function RecorrenteForm({ clientes, ehMei }: RecorrenteFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Repetir por quantos meses?
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Periodicidade</label>
+        <select
+          disabled
+          defaultValue="MENSAL"
+          className="mt-1 w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500"
+        >
+          <option value="MENSAL">Mensal</option>
+          <option value="TRIMESTRAL">Trimestral (em breve)</option>
+          <option value="SEMESTRAL">Semestral (em breve)</option>
+          <option value="ANUAL">Anual (em breve)</option>
+        </select>
+        <p className="mt-1 text-xs text-gray-500">
+          Por enquanto só a emissão mensal está disponível.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Primeira emissão</label>
         <input
-          name="quantidadeMeses"
-          type="number"
-          min={1}
-          placeholder="Deixe em branco para repetir sem prazo definido"
+          name="primeiraEmissao"
+          type="date"
           className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
-          Ex: 12 para emitir todo mês pelos próximos 12 meses e desativar
-          sozinho depois. Deixe em branco pra repetir indefinidamente, até você
-          desativar manualmente.
+          Opcional — só pra referência. A emissão de fato ocorre todo mês no
+          dia escolhido acima.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Por quanto tempo deseja repetir?
+        </label>
+        <select
+          value={duracao}
+          onChange={(e) => setDuracao(e.target.value as DuracaoOpcao)}
+          className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+        >
+          <option value="12">12 meses</option>
+          <option value="24">24 meses</option>
+          <option value="indefinidamente">Indefinidamente</option>
+        </select>
+        <input
+          type="hidden"
+          name="quantidadeMeses"
+          value={duracao === "indefinidamente" ? "" : duracao}
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Escolhendo 12 ou 24 meses, a recorrência se encerra sozinha depois da
+          última emissão.
         </p>
       </div>
 

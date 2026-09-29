@@ -29,9 +29,11 @@ export async function criarRecorrente(
   const { empresa, userId } = await getEmpresaDoUsuario();
 
   const clienteId = formData.get("clienteId") as string;
+  const servicoId = (formData.get("servicoId") as string) || undefined;
   const descricaoServico = (formData.get("descricaoServico") as string)?.trim();
   const valorStr = formData.get("valor") as string;
   const diaDoMesStr = formData.get("diaDoMes") as string;
+  const primeiraEmissaoStr = (formData.get("primeiraEmissao") as string) || "";
   const quantidadeMesesStr = (formData.get("quantidadeMeses") as string)?.trim();
   const codigoTributacaoNacionalIss =
     (formData.get("codigoTributacaoNacionalIss") as string)?.trim() || null;
@@ -71,13 +73,32 @@ export async function criarRecorrente(
     mesesRestantes = quantidade;
   }
 
+  let primeiraEmissao: Date | undefined;
+  if (primeiraEmissaoStr) {
+    primeiraEmissao = new Date(`${primeiraEmissaoStr}T00:00:00`);
+    if (Number.isNaN(primeiraEmissao.getTime())) {
+      return { error: "Informe uma data de primeira emissão válida." };
+    }
+  }
+
+  if (servicoId) {
+    const servico = await prisma.servico.findFirst({
+      where: { id: servicoId, empresaId: empresa.id },
+    });
+    if (!servico) {
+      return { error: "Serviço inválido." };
+    }
+  }
+
   const recorrente = await prisma.notaRecorrente.create({
     data: {
       empresaId: empresa.id,
       clienteId,
+      servicoId,
       descricaoServico,
       valor,
       diaDoMes,
+      primeiraEmissao,
       mesesRestantes,
       codigoTributacaoNacionalIss: ehMei ? codigoTributacaoNacionalIss : null,
     },

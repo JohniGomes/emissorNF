@@ -18,6 +18,12 @@ export default async function NovaRecorrentePage() {
     select: { id: true, nome: true, documento: true },
   });
 
+  const servicos = await prisma.servico.findMany({
+    where: { empresaId: empresa.id, ativo: true },
+    orderBy: { nome: "asc" },
+    select: { id: true, nome: true, descricao: true, valor: true },
+  });
+
   return (
     <div>
       <h1 className="mb-6 text-xl font-semibold text-gray-900">Nova nota recorrente</h1>
@@ -26,7 +32,11 @@ export default async function NovaRecorrentePage() {
           Cadastre pelo menos um cliente antes de configurar uma recorrência.
         </p>
       ) : (
-        <RecorrenteForm clientes={clientes} ehMei={empresa.regimeTributario === "MEI"} />
+        <RecorrenteForm
+          clientes={clientes}
+          servicos={servicos.map((s) => ({ ...s, valor: Number(s.valor) }))}
+          ehMei={empresa.regimeTributario === "MEI"}
+        />
       )}
     </div>
   );

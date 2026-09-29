@@ -91,21 +91,40 @@ export default async function RecorrentesPage() {
                       : "—"}
                   </td>
                   <td className="px-4 py-2 text-sm">
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-medium ${
-                        r.ativo ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
-                      }`}
-                    >
-                      {r.ativo ? "Ativa" : "Inativa"}
-                    </span>
+                    {(() => {
+                      const encerrada = !r.ativo && r.mesesRestantes === 0;
+                      if (r.ativo) {
+                        return (
+                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                            🟢 Ativa
+                          </span>
+                        );
+                      }
+                      if (encerrada) {
+                        return (
+                          <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                            🔴 Encerrada
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700">
+                          ⏸ Pausada
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-2 text-sm">
-                    <form action={alternarRecorrente}>
-                      <input type="hidden" name="id" value={r.id} />
-                      <button type="submit" className="text-brand-brown hover:underline">
-                        {r.ativo ? "Desativar" : "Ativar"}
-                      </button>
-                    </form>
+                    {r.mesesRestantes === 0 && !r.ativo ? (
+                      <span className="text-xs text-gray-400">—</span>
+                    ) : (
+                      <form action={alternarRecorrente}>
+                        <input type="hidden" name="id" value={r.id} />
+                        <button type="submit" className="text-brand-brown hover:underline">
+                          {r.ativo ? "Pausar" : "Reativar"}
+                        </button>
+                      </form>
+                    )}
                   </td>
                 </tr>
               ))}
