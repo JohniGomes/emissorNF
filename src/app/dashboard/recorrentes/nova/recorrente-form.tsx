@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useActionState } from "react";
 import { criarRecorrente, type RecorrenteState } from "../actions";
+import { SeletorCodigoTributacao } from "@/components/seletor-codigo-tributacao";
 
 interface Servico {
   id: string;
@@ -28,6 +29,7 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
   const [descricaoServico, setDescricaoServico] = useState("");
   const [valor, setValor] = useState("");
   const [duracao, setDuracao] = useState<DuracaoOpcao>("indefinidamente");
+  const [codigoTributacaoNacionalIss, setCodigoTributacaoNacionalIss] = useState("");
 
   function handleSelecionarServico(id: string) {
     setServicoId(id);
@@ -179,14 +181,15 @@ export function RecorrenteForm({ clientes, servicos, ehMei }: RecorrenteFormProp
           <label className="block text-sm font-medium text-gray-700">
             Código de tributação nacional do ISS *
           </label>
-          <input
-            name="codigoTributacaoNacionalIss"
-            required
-            placeholder="ex: 010701"
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          <input type="hidden" name="codigoTributacaoNacionalIss" value={codigoTributacaoNacionalIss} />
+          <SeletorCodigoTributacao
+            value={codigoTributacaoNacionalIss}
+            onChange={setCodigoTributacaoNacionalIss}
+            formato="nacional"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Exigido pela NFS-e Nacional em toda emissão para empresas MEI.
+            Exigido pela NFS-e Nacional em toda emissão para empresas MEI. Digite o código
+            ou parte da descrição do serviço pra filtrar.
           </p>
         </div>
       )}

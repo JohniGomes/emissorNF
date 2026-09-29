@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useActionState } from "react";
 import { emitirNota, type NotaState } from "../actions";
+import { SeletorCodigoTributacao } from "@/components/seletor-codigo-tributacao";
+import { buscarCodigoTributacaoNacional } from "@/lib/codigoTributacaoNacional";
 
 interface Servico {
   id: string;
@@ -148,7 +150,11 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
         )}
         {!ehMei && (
           <>
-            <input type="hidden" name="itemListaServico" value={itemListaServico} />
+            <input
+              type="hidden"
+              name="itemListaServico"
+              value={itemListaServico.slice(0, 4)}
+            />
             <input type="hidden" name="codigoNbs" value={codigoNbs} />
           </>
         )}
@@ -202,11 +208,15 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
               </div>
             )}
 
-            {ehMei && (
+            {ehMei && codigoTributacaoNacionalIss && (
               <div>
                 <p className="text-xs font-medium uppercase text-gray-400">Opções fiscais</p>
                 <p className="text-gray-900">
                   Código de tributação nacional do ISS: {codigoTributacaoNacionalIss}
+                  {(() => {
+                    const item = buscarCodigoTributacaoNacional(codigoTributacaoNacionalIss, 1)[0];
+                    return item ? ` — ${item.descricao}` : "";
+                  })()}
                 </p>
               </div>
             )}
@@ -216,7 +226,13 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 <p className="text-xs font-medium uppercase text-gray-400">Opções fiscais</p>
                 {itemListaServico && (
                   <p className="text-gray-900">
-                    Item da lista de serviços (LC 116/2003): {itemListaServico}
+                    Item da lista de serviços (LC 116/2003):{" "}
+                    {buscarCodigoTributacaoNacional(itemListaServico, 1)[0]?.codigoFormatado ??
+                      itemListaServico}
+                    {(() => {
+                      const item = buscarCodigoTributacaoNacional(itemListaServico, 1)[0];
+                      return item ? ` — ${item.descricao}` : "";
+                    })()}
                   </p>
                 )}
                 {codigoNbs && <p className="text-gray-900">Código NBS: {codigoNbs}</p>}
@@ -407,16 +423,15 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                 <label className="block text-sm font-medium text-gray-700">
                   Código de tributação nacional do ISS *
                 </label>
-                <input
+                <SeletorCodigoTributacao
                   value={codigoTributacaoNacionalIss}
-                  onChange={(e) => setCodigoTributacaoNacionalIss(e.target.value)}
-                  placeholder="ex: 010701"
-                  className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                  onChange={setCodigoTributacaoNacionalIss}
+                  formato="nacional"
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                  Exigido pela NFS-e Nacional para empresas MEI. Consulte a tabela oficial de
-                  códigos de tributação nacional do ISS ou seu contador se não souber o código do
-                  seu serviço.
+                  Exigido pela NFS-e Nacional para empresas MEI. Digite o código ou parte da
+                  descrição do serviço pra filtrar a tabela oficial — consulte seu contador se
+                  não souber qual se aplica.
                 </p>
               </div>
             )}
@@ -427,16 +442,15 @@ export function NotaForm({ clientes, servicos, ehMei, nomeEmpresa, defaultValues
                   <label className="block text-sm font-medium text-gray-700">
                     Item da lista de serviços (LC 116/2003)
                   </label>
-                  <input
+                  <SeletorCodigoTributacao
                     value={itemListaServico}
-                    onChange={(e) => setItemListaServico(e.target.value)}
-                    placeholder="ex: 1701 (Assessoria ou consultoria)"
-                    className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+                    onChange={setItemListaServico}
+                    formato="lc116"
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Alguns municípios exigem esse código pra autorizar a nota. Consulte a
-                    lista de serviços da LC 116/2003 ou seu contador se não souber o código
-                    do seu serviço — deixe em branco se seu município não exigir.
+                    Alguns municípios exigem esse código pra autorizar a nota. Digite o
+                    código ou parte da descrição do serviço pra filtrar — deixe em branco se
+                    seu município não exigir.
                   </p>
                 </div>
                 <div>
