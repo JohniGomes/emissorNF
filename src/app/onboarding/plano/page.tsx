@@ -17,7 +17,7 @@ export default async function OnboardingPlanoPage() {
 
   return (
     <div>
-      <WizardSteps atual={2} />
+      <WizardSteps atual={3} />
       <h1 className="mb-6 text-center text-xl font-semibold text-gray-900">
         Escolha seu plano
       </h1>

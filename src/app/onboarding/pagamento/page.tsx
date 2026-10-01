@@ -22,7 +22,7 @@ export default async function OnboardingPagamentoPage() {
 
   return (
     <div>
-      <WizardSteps atual={3} />
+      <WizardSteps atual={4} />
       <h1 className="mb-6 text-center text-xl font-semibold text-gray-900">
         Pagamento
       </h1>

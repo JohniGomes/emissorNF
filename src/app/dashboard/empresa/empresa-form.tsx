@@ -185,9 +185,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">CEP</label>
+          <label className="block text-sm font-medium text-gray-700">CEP *</label>
           <input
             name="cep"
+            required
             value={cep}
             onChange={(e) => setCep(formatarCep(e.target.value))}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -195,9 +196,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Logradouro</label>
+          <label className="block text-sm font-medium text-gray-700">Logradouro *</label>
           <input
             name="logradouro"
+            required
             value={logradouro}
             onChange={(e) => setLogradouro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -205,9 +207,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Número</label>
+          <label className="block text-sm font-medium text-gray-700">Número *</label>
           <input
             name="numero"
+            required
             value={numero}
             onChange={(e) => setNumero(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -225,9 +228,10 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Bairro</label>
+          <label className="block text-sm font-medium text-gray-700">Bairro *</label>
           <input
             name="bairro"
+            required
             value={bairro}
             onChange={(e) => setBairro(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
@@ -249,10 +253,6 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
               setMunicipioCodigoIbge(m.codigo);
             }}
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Busque pelo nome - não depende do "Buscar dados" do CNPJ, funciona mesmo se
-            aquela busca estiver fora do ar.
-          </p>
         </div>
 
         <div>

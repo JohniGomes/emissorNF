@@ -62,9 +62,13 @@ export function validarDadosEmpresa(dados: DadosEmpresaForm): string | null {
     !dados.cnpj ||
     !dados.regimeTributario ||
     !dados.municipioCodigoIbge ||
-    !dados.uf
+    !dados.uf ||
+    !dados.cep ||
+    !dados.logradouro ||
+    !dados.numero ||
+    !dados.bairro
   ) {
-    return "Preencha todos os campos obrigatórios.";
+    return "Preencha todos os campos obrigatórios, incluindo o endereço completo.";
   }
   return null;
 }

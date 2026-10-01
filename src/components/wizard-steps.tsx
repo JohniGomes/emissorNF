@@ -1,6 +1,6 @@
-const steps = ["Dados da sua empresa", "Escolha seu plano", "Pagamento"];
+const steps = ["Dados da sua empresa", "Certificado digital", "Escolha seu plano", "Pagamento"];
 
-export function WizardSteps({ atual }: { atual: 1 | 2 | 3 }) {
+export function WizardSteps({ atual }: { atual: 1 | 2 | 3 | 4 }) {
   return (
     <div className="mb-8 flex items-center justify-center gap-3 text-sm">
       {steps.map((label, index) => {

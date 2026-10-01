@@ -63,5 +63,5 @@ export async function salvarEmpresaOnboarding(
   }
   if (resultado.error) return { error: resultado.error };
 
-  redirect("/onboarding/plano");
+  redirect("/onboarding/certificado");
 }
