@@ -43,7 +43,9 @@ model Empresa {
   telefone          String?
   celular           String?
   inscricaoMunicipal String?
-  regimeTributario  String
+  // Nulo até identificarmos (pelo CNPJ) ou o usuário confirmar manualmente em
+  // "Sua empresa" - nunca inventamos esse valor quando não dá pra saber.
+  regimeTributario  String?
   logradouro        String?
   numero            String?
   complemento       String?

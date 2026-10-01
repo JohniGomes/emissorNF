@@ -98,7 +98,18 @@ export default async function DashboardPage() {
   const percentualLimiteMei = (totalFaturadoAno / LIMITE_ANUAL_MEI) * 100;
 
   const pendencias = [
-    ...(!empresa.focusNfeTokenEncrypted
+    ...(!empresa.regimeTributario
+      ? [
+          {
+            id: "regime-tributario",
+            titulo: "Regime tributário pendente",
+            descricao:
+              "Não conseguimos identificar seu regime tributário automaticamente pelo CNPJ. Defina em Empresa para poder emitir notas.",
+            href: "/dashboard/empresa",
+          },
+        ]
+      : []),
+    ...(empresa.regimeTributario && !empresa.focusNfeTokenEncrypted
       ? [
           {
             id: "config-fiscal",

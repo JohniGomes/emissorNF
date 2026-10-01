@@ -19,6 +19,13 @@ const MENSAGEM_GENERICA: ErroNormalizado = {
 
 const PADROES: Array<{ regex: RegExp; normalizar: (original: string) => ErroNormalizado }> = [
   {
+    regex: /regime tributário/i,
+    normalizar: () => ({
+      mensagem: "O regime tributário da sua empresa ainda não foi definido.",
+      dica: 'Vá em "Sua empresa" e selecione o regime tributário (MEI, Simples Nacional, etc.).',
+    }),
+  },
+  {
     regex: /certificado digital/i,
     normalizar: () => ({
       mensagem: "Sua empresa ainda não tem um certificado digital configurado.",

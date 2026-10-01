@@ -72,6 +72,13 @@ export async function emitirNota(
   });
   if (!empresa) redirect("/dashboard/empresa");
 
+  if (!empresa.regimeTributario) {
+    return {
+      error:
+        "Complete o regime tributário da empresa na página Empresa antes de emitir notas.",
+    };
+  }
+
   if (!empresa.focusNfeTokenEncrypted) {
     return {
       error:

@@ -47,6 +47,10 @@ export async function emitirNotaParaEmpresa({
   itemListaServico,
   codigoNbs,
 }: EmitirNotaParaEmpresaParams): Promise<Nota> {
+  if (!empresa.regimeTributario) {
+    throw new Error("Empresa sem regime tributário definido.");
+  }
+
   if (!empresa.focusNfeTokenEncrypted) {
     throw new Error("Empresa sem certificado digital ou cadastro fiscal configurado.");
   }

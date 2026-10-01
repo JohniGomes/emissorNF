@@ -17,7 +17,7 @@ export interface EmpresaDefaultValues {
   telefone: string | null;
   celular: string | null;
   inscricaoMunicipal: string | null;
-  regimeTributario: string;
+  regimeTributario: string | null;
   logradouro: string | null;
   numero: string | null;
   complemento: string | null;
