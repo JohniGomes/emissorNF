@@ -8,6 +8,7 @@ import {
   type BuscarCnpjState,
 } from "./actions";
 import { formatarCep, formatarCpfCnpj } from "@/lib/formatters";
+import { SeletorMunicipio } from "@/components/seletor-municipio";
 
 export interface EmpresaDefaultValues {
   razaoSocial: string;
@@ -233,39 +234,25 @@ export function EmpresaForm({ defaultValues }: EmpresaFormProps) {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Município</label>
-          <input
-            name="municipio"
-            value={municipio}
-            onChange={(e) => setMunicipio(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">UF *</label>
-          <input
-            name="uf"
-            required
-            maxLength={2}
-            value={uf}
-            onChange={(e) => setUf(e.target.value.toUpperCase())}
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm uppercase"
-          />
-        </div>
-
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Código IBGE do município *
-          </label>
-          <input
-            name="municipioCodigoIbge"
-            required
-            value={municipioCodigoIbge}
-            onChange={(e) => setMunicipioCodigoIbge(e.target.value)}
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          <label className="block text-sm font-medium text-gray-700">Município *</label>
+          <input type="hidden" name="municipio" value={municipio} />
+          <input type="hidden" name="uf" value={uf} />
+          <input type="hidden" name="municipioCodigoIbge" value={municipioCodigoIbge} />
+          <SeletorMunicipio
+            codigoIbge={municipioCodigoIbge}
+            municipioNome={municipio}
+            uf={uf}
+            onSelecionar={(m) => {
+              setMunicipio(m.nome);
+              setUf(m.uf);
+              setMunicipioCodigoIbge(m.codigo);
+            }}
           />
+          <p className="mt-1 text-xs text-gray-500">
+            Busque pelo nome - não depende do "Buscar dados" do CNPJ, funciona mesmo se
+            aquela busca estiver fora do ar.
+          </p>
         </div>
 
         <div>

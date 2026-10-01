@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import type { Cliente } from "@prisma/client";
 import { atualizarCliente, type ClienteState } from "../../actions";
 import { formatarCep, formatarCpfCnpj } from "@/lib/formatters";
+import { SeletorMunicipio } from "@/components/seletor-municipio";
 
 const initialState: ClienteState = {};
 
@@ -18,6 +19,11 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
   );
   const [documento, setDocumento] = useState(formatarCpfCnpj(cliente.documento));
   const [cep, setCep] = useState(cliente.cep ? formatarCep(cliente.cep) : "");
+  const [municipio, setMunicipio] = useState(cliente.municipio ?? "");
+  const [uf, setUf] = useState(cliente.uf ?? "");
+  const [municipioCodigoIbge, setMunicipioCodigoIbge] = useState(
+    cliente.municipioCodigoIbge ?? "",
+  );
 
   const documentoSomenteDigitos = documento.replace(/\D/g, "");
   const pareceCnpj = documentoSomenteDigitos.length === 14;
@@ -29,11 +35,7 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
 
   return (
     <form action={formAction} className="max-w-xl space-y-4">
-      <input
-        type="hidden"
-        name="municipioCodigoIbge"
-        defaultValue={cliente.municipioCodigoIbge ?? ""}
-      />
+      <input type="hidden" name="municipioCodigoIbge" value={municipioCodigoIbge} />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="col-span-2">
@@ -107,16 +109,6 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">UF</label>
-          <input
-            name="uf"
-            maxLength={2}
-            defaultValue={cliente.uf ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm uppercase"
-          />
-        </div>
-
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">Logradouro</label>
           <input
@@ -155,10 +147,17 @@ export function EditarClienteForm({ cliente }: { cliente: Cliente }) {
 
         <div className="col-span-2">
           <label className="block text-sm font-medium text-gray-700">Município</label>
-          <input
-            name="municipio"
-            defaultValue={cliente.municipio ?? ""}
-            className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+          <input type="hidden" name="municipio" value={municipio} />
+          <input type="hidden" name="uf" value={uf} />
+          <SeletorMunicipio
+            codigoIbge={municipioCodigoIbge}
+            municipioNome={municipio}
+            uf={uf}
+            onSelecionar={(m) => {
+              setMunicipio(m.nome);
+              setUf(m.uf);
+              setMunicipioCodigoIbge(m.codigo);
+            }}
           />
         </div>
       </div>
