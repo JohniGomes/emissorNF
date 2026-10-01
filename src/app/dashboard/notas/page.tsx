@@ -93,12 +93,20 @@ export default async function NotasPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-gray-900">Notas emitidas</h1>
-        <Link
-          href="/dashboard/notas/nova"
-          className="rounded-md btn-gradient px-4 py-2 text-sm font-medium text-white"
-        >
-          + Emitir nota
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/dashboard/notas/importar"
+            className="rounded-md border border-brand-tan bg-brand-cream px-4 py-2 text-sm font-medium text-brand-dark hover:bg-brand-cream"
+          >
+            Importar em lote
+          </Link>
+          <Link
+            href="/dashboard/notas/nova"
+            className="rounded-md btn-gradient px-4 py-2 text-sm font-medium text-white"
+          >
+            + Emitir nota
+          </Link>
+        </div>
       </div>
 
       <form
